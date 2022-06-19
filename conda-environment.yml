@@ -1,0 +1,18 @@
+name: complex-epidemics-simulator
+channels:
+  - defaults
+  - conda-forge
+dependencies:
+  - python=3.10.*
+  - numpy
+  - matplotlib
+  - jupyter
+  - pandas
+  - mesa
+  - pip
+  - networkx
+  - black
+  - pylint
+  - attrs
+  - pytest
+  - pytest-cov

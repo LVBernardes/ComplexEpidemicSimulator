@@ -1,0 +1,46 @@
+{
+  "inventory":[
+    {
+      "agent_class": "location",
+      "agent_class_data": [
+        {
+          "agent_subclass": "household",
+          "agent_subclass_total:": 40,
+          "agent_subclass_data": {}
+        },
+        {
+          "agent_subclass": "workplace",
+          "agent_subclass_total:": 10,
+          "agent_subclass_data": {}
+        }
+      ]
+    },
+    {
+      "agent_class": "transport",
+      "agent_class_data": [
+        {
+          "agent_subclass": "bus",
+          "agent_subclass_total:": 10,
+          "agent_subclass_data": {}
+        }
+      ]
+    },
+    {
+      "agent_class": "humans",
+      "agent_class_data": [
+        {
+          "agent_subclass": "worker",
+          "agent_subclass_total:": 40,
+          "agent_subclass_data": {}
+        },
+        {
+          "agent_subclass": "non-worker",
+          "agent_subclass_total:": 110,
+          "agent_subclass_data": {}
+        }
+      ]
+    }
+  ],
+  "relations":
+
+}
