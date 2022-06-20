@@ -13,7 +13,6 @@ class DiseaseInstance(IModelStepper):
     __slots__ = (
         "_active",
         "_state",
-        "_symptoms_state",
         "_disease",
         "_host",
         "_all_states",

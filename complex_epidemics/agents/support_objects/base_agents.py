@@ -40,13 +40,14 @@ class ContainerAgent(Agent, GraphAgent):
     def __init__(self, unique_id: int, model: SimulationModel):
         self.model = model
         self.unique_id = unique_id
-        self._graph_node_id = None
+        self._graph_node_id = unique_id
         self._category = None
         self._sub_category = None
         self._max_capacity_nominal: int = 0
         self._max_capacity_effective: int = 0
         self._occupants: list = list()
         self._occupancy: int = 0
+        self._infectivity: float = 0
 
     @property
     def category(self) -> Any:
@@ -96,6 +97,14 @@ class ContainerAgent(Agent, GraphAgent):
     def occupancy(self, value: int) -> None:
         self._occupancy = value
 
+    @property
+    def infectivity(self) -> float:
+        return self._infectivity
+
+    @infectivity.setter
+    def infectivity(self, value: float) -> None:
+        self._infectivity = value
+
     def add_occupant(self, agent_id) -> None:
         new_occupant_list = self.occupants
         new_occupant_list.append(agent_id)
@@ -107,9 +116,9 @@ class ContainerAgent(Agent, GraphAgent):
         self.occupants = new_occupant_list
 
     def update_occupants_from_graph_edges(self):
-        related_agents = self.model.graph.get_node_neighbours(self.graph_node_id)
+        related_agents = list(self.model.graph.get_node_neighbours(self.graph_node_id))
         self.occupants = related_agents
-        self.occupancy = len(related_agents)
+        self.occupancy = len(related_agents) if related_agents else 0
 
 
 class MobileAgent(Agent, GraphAgent):
@@ -119,7 +128,7 @@ class MobileAgent(Agent, GraphAgent):
     def __init__(self, unique_id: int, model: SimulationModel):
         self.unique_id = unique_id
         self.model = model
-        self._graph_node_id = None
+        self._graph_node_id = unique_id
         self._position: int = 0
         self._last_positions: list[int] = list()
 
@@ -131,9 +140,29 @@ class MobileAgent(Agent, GraphAgent):
     def position(self, value: int) -> None:
         self._position = value
 
-    def change_position(self, to_pos: int, from_pos: int = position) -> None:
-        self._last_positions.append(from_pos)
-        self.position = to_pos
+    def change_position(self, to_pos: Any, from_pos: Any = None) -> None:
+
+        if from_pos is None:
+            from_pos = self.position
+
+        if not self.model.graph.has_node(to_pos):
+            LOG.error(f'Position node ID "{to_pos}" DOES NOT exist in model graph.')
+            raise ValueError(
+                f'Position node ID "{to_pos}" DOES NOT exist in model graph.'
+            )
+        try:
+            if self.model.graph.has_edge(self.graph_node_id, from_pos):
+                self.model.graph.remove_edge(self.graph_node_id, from_pos)
+            self.model.graph.add_edge(self.graph_node_id, to_pos)
+        except Exception as err:
+            LOG.error(
+                f"Could NOT add or remove edge between {self.graph_node_id} "
+                f'and one or both nodes "{to_pos}" and "{from_pos}".'
+            )
+            raise err
+        else:
+            self._last_positions.append(from_pos)
+            self.position = to_pos
 
     def get_last_positions(self) -> list[int]:
         positions = self._last_positions

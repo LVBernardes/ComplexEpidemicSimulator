@@ -1,13 +1,20 @@
 from complex_epidemics.agents.disease import Disease
-from complex_epidemics.agents.support_objects.disease.disease_instance import DiseaseInstance
-from complex_epidemics.agents.support_objects.human.health_protection_measures import MaskType, MaskWearing, \
-    ProtectionMeasureType
-from complex_epidemics.agents.support_objects.human.human_attributes import HealthState, HumanHealth
+from complex_epidemics.agents.support_objects.disease.disease_instance import (
+    DiseaseInstance,
+)
+from complex_epidemics.agents.support_objects.human.health_protection_measures import (
+    MaskType,
+    MaskWearing,
+    ProtectionMeasureType,
+)
+from complex_epidemics.agents.support_objects.human.human_attributes import (
+    HealthState,
+    HumanHealth,
+)
 from complex_epidemics.model.simulation_model import SimulationModel
 
 
 class TestHumanHealth:
-
     def test_instantiation(self):
 
         health = HumanHealth()
@@ -52,9 +59,7 @@ class TestHumanHealth:
         susceptible_test_a_real = health.is_susceptible
         susceptible_test_a_expected = False
 
-        assert (
-            susceptible_test_a_real == susceptible_test_a_expected
-        )
+        assert susceptible_test_a_real == susceptible_test_a_expected
 
     def test_method_update_susceptibility_with_disease(self):
 
@@ -68,17 +73,14 @@ class TestHumanHealth:
         susceptible_test_a_real = health.is_susceptible
         susceptible_test_a_expected = False
 
-        assert (
-            susceptible_test_a_real == susceptible_test_a_expected
-        )
+        assert susceptible_test_a_real == susceptible_test_a_expected
 
     def test_method_add_protection_measure(self):
 
         health = HumanHealth()
 
         health.start_protection_measure(
-            measure=ProtectionMeasureType.MASKWEARING,
-            options=MaskType.RESPIRATOR
+            measure=ProtectionMeasureType.MASKWEARING, options=MaskType.RESPIRATOR
         )
 
         expected_measure_dict = {
@@ -87,26 +89,18 @@ class TestHumanHealth:
 
         real_measure_dict = health.protection_measures
 
-        assert (
-            expected_measure_dict.keys() == real_measure_dict.keys()
-        )
+        assert expected_measure_dict.keys() == real_measure_dict.keys()
 
     def test_method_drop_protection_measure(self):
 
         health = HumanHealth()
 
-        health.start_protection_measure(
-            measure=ProtectionMeasureType.HANDWASHING
-        )
+        health.start_protection_measure(measure=ProtectionMeasureType.HANDWASHING)
 
-        health.drop_protection_behaviour(
-            measure=ProtectionMeasureType.HANDWASHING
-        )
+        health.drop_protection_behaviour(measure=ProtectionMeasureType.HANDWASHING)
 
         expected_measure_dict = {}
 
         real_measure_dict = health.protection_measures
 
-        assert (
-                expected_measure_dict.keys() == real_measure_dict.keys()
-        )
+        assert expected_measure_dict.keys() == real_measure_dict.keys()

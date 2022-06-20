@@ -44,7 +44,6 @@ class Human(MobileAgent, IModelStepper):
         for element in StepUtils.get_elements_with_step_method(
             self, "self", remove_protected=True
         ):
-            print(element)
             eval(f"{element}.step()")
 
     def advance(self) -> None:

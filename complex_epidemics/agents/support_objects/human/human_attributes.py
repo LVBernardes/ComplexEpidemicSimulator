@@ -64,7 +64,7 @@ class HumanHealth(IModelStepper):
 
     @is_infectious.setter
     def is_infectious(self, value: bool) -> None:
-        self.is_infectious = value
+        self._is_infectious = value
 
     @property
     def protection_measures(self) -> dict:
@@ -125,10 +125,7 @@ class HumanHealth(IModelStepper):
         self._protection_measures[measure.name] = measure_obj
 
     def drop_protection_behaviour(self, measure: ProtectionMeasureType) -> None:
-        if (
-            self.protection_measures is not None
-            or len(self.protection_measures) != 0
-        ):
+        if self.protection_measures is not None or len(self.protection_measures) != 0:
             self._protection_measures.pop(measure.name)
 
     def update_susceptibility(self):

@@ -4,6 +4,7 @@
 
 
 import logging
+from pprint import pprint
 
 from mesa import Model
 
@@ -63,7 +64,7 @@ class SimulationModel(Model):
         if len(self._container_agents) != 0:
             return self._container_agents
         else:
-            self._container_agents = self.get_agents_by_class('ContainerAgent')
+            self._container_agents = self.get_agents_by_class("ContainerAgent")
             return self._container_agents
 
     @property
@@ -71,7 +72,7 @@ class SimulationModel(Model):
         if len(self._mobile_agents) != 0:
             return self._mobile_agents
         else:
-            self._mobile_agents = self.get_agents_by_class('MobileAgent')
+            self._mobile_agents = self.get_agents_by_class("MobileAgent")
             return self._mobile_agents
 
     def get_agents_by_class(self, agent_class: str) -> list[int]:
@@ -79,7 +80,9 @@ class SimulationModel(Model):
         try:
             class_list = list()
             for agent in self.schedule.agents:
-                if {agent_class}.intersection(set(agent.__class__.__mro__)):
+                if {agent_class}.intersection(
+                    {ag_class.__name__ for ag_class in agent.__class__.__mro__}
+                ):
                     class_list.append(agent.unique_id)
         except Exception as err:
             LOG.exception(err)
@@ -96,7 +99,7 @@ class SimulationModel(Model):
             for index, class_name in enumerate(class_list):
                 class_agents_id_list = self.get_agents_by_class(agent_class=class_name)
                 self.schedule.add_agent_to_activation_order(
-                    agent_list=class_agents_id_list, order=index
+                    agent_id_list=class_agents_id_list, order=index
                 )
         except Exception as err:
             LOG.exception(err)
@@ -106,6 +109,6 @@ class SimulationModel(Model):
 
     def step(self):
         if not self.is_activation_order_configured:
-            self.set_activation_order(class_list=self.activation_order)
+            self.set_activation_order()
 
         self.schedule.step()
