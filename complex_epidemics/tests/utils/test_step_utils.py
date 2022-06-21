@@ -2,7 +2,9 @@ from typing import Any
 
 from mesa import Agent, Model
 
-from complex_epidemics.model.support_objects.abstract_model_stepper import IModelStepper
+from complex_epidemics.model.support_objects.abstract_model_step_helpers import (
+    IModelStepper,
+)
 from complex_epidemics.utils.step_utils import StepUtils
 
 

@@ -11,6 +11,7 @@ from complex_epidemics.agents.support_objects.human.human_attributes import (
 from complex_epidemics.agents.support_objects.human.human_occupation import Occupation
 from complex_epidemics.agents.support_objects.human.human_behaviour import (
     HumanBehaviour,
+    StandardBehaviour,
 )
 from complex_epidemics.model.simulation_model import SimulationModel
 from complex_epidemics.utils.id_utils import IDUtils
@@ -74,6 +75,7 @@ class HumanBuilder:
             self._new_human.psychological = self._psychological_attrs
             self._new_human.behaviour = self._behaviour
             self._new_human.occupation = self._occupation
+            self._new_human.occupation._human = self._new_human
         except Exception as err:
             LOG.exception(err)
 
@@ -92,6 +94,9 @@ class HumanBuilder:
     def set_physical_attrs(self, attrs: Any = None) -> None:
         if attrs is not None:
             self._physical_attrs = HumanPhysical()
+            self._physical_attrs = attrs.get("age", 0)
+            self._physical_attrs = attrs.get("height", 0.0)
+            self._physical_attrs = attrs.get("weigh", 0.0)
         else:
             self._physical_attrs = None
 
@@ -105,7 +110,7 @@ class HumanBuilder:
         if attrs is not None:
             self._behaviour = HumanBehaviour()
         else:
-            self._behaviour = None
+            self._behaviour = StandardBehaviour()
 
     def set_occupation(self, occupation: Occupation = None) -> None:
         if occupation is not None:

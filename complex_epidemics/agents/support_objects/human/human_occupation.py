@@ -1,30 +1,21 @@
-from enum import Enum
+import logging
 from typing import Any
 
-from complex_epidemics.model.support_objects.abstract_model_stepper import IModelStepper
+import numpy as np
 
+from complex_epidemics.agents.support_objects.human.human_occupation_categories import (
+    GenericOccupationCategory,
+    StudentCategory,
+    WorkerCategory,
+)
+from complex_epidemics.agents.support_objects.occupation_locale_assigments import (
+    OccupationToLocale,
+)
+from complex_epidemics.model.support_objects.abstract_model_step_helpers import (
+    IModelStepper,
+)
 
-class WorkerCategory(Enum):
-    GENERIC = "GenericWorker"
-    HEALTH = "HealthWorker"
-    INDUSTRY = "IndustryWorker"
-    SERVICES = "ServicesWorker"
-    EDUCATION = "EducationWorker"
-
-
-class StudentCategory(Enum):
-    GENERIC = "GenericStudent"
-    ELEMENTARY = "ElementaryStudent"
-    MIDDLESCHOOL = "MiddleSchoolStudent"
-    HIGHSCHOOL = "HighSchoolStudent"
-    COLLEGE = "CollegeStudent"
-
-
-class GenericOccupationCategory(Enum):
-    GENERIC = "GenericOccupation"
-    HOUSECARE = "Housecare"
-    RETIRED = "Retired"
-    INFANT = "Infant"
+LOG = logging.getLogger(__name__)
 
 
 class Occupation(IModelStepper):
@@ -41,12 +32,22 @@ class Occupation(IModelStepper):
 
     def __init__(self) -> None:
         self._category: Any = None
+        self._human: Any = None
         self._occupation_locale: Any = None
+        self._is_occupation_locale_assigned: bool = False
         self._is_transport_required: bool = False
         self._transport_category_preference: Any = None
         self._transport_preference: Any = None
         self._is_economic_active: bool = False
         self._activities: list = []
+
+    @property
+    def category(self) -> Any:
+        return self._category
+
+    @category.setter
+    def category(self, value: Any) -> None:
+        self._category = value
 
     @property
     def occupation_locale(self) -> Any:
@@ -55,6 +56,14 @@ class Occupation(IModelStepper):
     @occupation_locale.setter
     def occupation_locale(self, value: Any) -> None:
         self._occupation_locale = value
+
+    @property
+    def is_occupation_locale_assigned(self) -> bool:
+        return self._is_occupation_locale_assigned
+
+    @is_occupation_locale_assigned.setter
+    def is_occupation_locale_assigned(self, value: bool) -> None:
+        self._is_occupation_locale_assigned = value
 
     @property
     def is_transport_required(self) -> bool:
@@ -88,12 +97,41 @@ class Occupation(IModelStepper):
     def is_economic_active(self, value: bool) -> None:
         self._is_economic_active = value
 
+    def assign_occupation_locale(self) -> None:
+        rng = np.random.default_rng()
+        loop_counter = 0
+        own_occupation = f"{self.category.__class__.__name__}{self.category.name}"
+        locales_classes = OccupationToLocale[own_occupation].value
+        for locale_class in locales_classes:
+            real_locale_id_list = self._human.model.get_agents_by_class(locale_class)
+            if real_locale_id_list:
+                while not self.is_occupation_locale_assigned and loop_counter < 10:
+                    real_locale_id = rng.choice(real_locale_id_list)
+                    real_locale = self._human.model.schedule._agents[real_locale_id]
+                    loop_counter += 1
+                    if (
+                        len(real_locale.assigned_occupations)
+                        < real_locale.max_capacity_nominal
+                    ):
+                        LOG.debug(
+                            f'Assigning agent with ID "{self._human.graph_node_id}" and occupation "{self.category.__class__.__name__}.{self.category.name}" to locale with ID "{real_locale_id}" and class"{real_locale.__class__.__name__}".'
+                        )
+                        real_locale.add_assigned_occupant(self._human.graph_node_id)
+                        self.occupation_locale = real_locale_id
+                        self.is_occupation_locale_assigned = True
+                        return None
+                if not self.is_occupation_locale_assigned:
+                    LOG.error("DID NOT found a suitable locale to be assigned.")
+                    raise Exception("DID NOT found a suitable locale to be assigned.")
+
     def step(self):
-        pass
+        if not self.is_occupation_locale_assigned:
+            self.assign_occupation_locale()
 
 
 class Worker(Occupation):
     def __init__(self) -> None:
+        super().__init__()
         self._category: WorkerCategory = WorkerCategory.GENERIC
         self._is_economic_active: bool = True
         self._activities: list = []
@@ -101,6 +139,7 @@ class Worker(Occupation):
 
 class Student(Occupation):
     def __init__(self) -> None:
+        super().__init__()
         self._category: StudentCategory = StudentCategory.GENERIC
         self._is_economic_active: bool = False
         self._activities: list = []
@@ -108,6 +147,7 @@ class Student(Occupation):
 
 class GenericOccupation(Occupation):
     def __init__(self) -> None:
+        super().__init__()
         self._category: GenericOccupationCategory = GenericOccupationCategory.GENERIC
         self._is_economic_active: bool = False
         self._activities: list = []

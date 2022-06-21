@@ -1,9 +1,11 @@
 from mesa.time import BaseScheduler
 
 from complex_epidemics.agents.locale import (
+    HealthCareUnit,
+)
+from complex_epidemics.agents.support_objects.locale.locale_categories import (
     EducationalInstitutionCategory,
     HealthCareCategory,
-    HealthCareUnit,
     HouseholdCategory,
     PublicPlaceCategory,
     WorkplaceCategory,

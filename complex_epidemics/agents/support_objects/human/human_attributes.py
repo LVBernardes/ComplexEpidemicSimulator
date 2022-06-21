@@ -10,7 +10,9 @@ from complex_epidemics.agents.support_objects.disease.immunity_instance import (
 from complex_epidemics.agents.support_objects.human.health_protection_measures import (
     ProtectionMeasureType,
 )
-from complex_epidemics.model.support_objects.abstract_model_stepper import IModelStepper
+from complex_epidemics.model.support_objects.abstract_model_step_helpers import (
+    IModelStepper,
+)
 from complex_epidemics.utils.exceptions import InvalidOptionError
 
 LOG = logging.getLogger(__name__)
@@ -168,7 +170,33 @@ class HumanSocial(IModelStepper):
 
 class HumanPhysical(IModelStepper):
     def __init__(self) -> None:
-        pass
+        self._age: int = 0
+        self._height: float = 0.0
+        self._weight: float = 0.0
+
+    @property
+    def age(self) -> int:
+        return self._age
+
+    @age.setter
+    def age(self, value: int) -> None:
+        self._age = value
+
+    @property
+    def height(self) -> float:
+        return self._height
+
+    @height.setter
+    def height(self, value: float) -> None:
+        self._height = value
+
+    @property
+    def weight(self) -> float:
+        return self._weight
+
+    @weight.setter
+    def weight(self, value: float) -> None:
+        self._weight = value
 
     def step(self):
         pass

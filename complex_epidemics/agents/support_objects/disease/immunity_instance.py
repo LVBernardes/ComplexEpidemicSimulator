@@ -3,7 +3,9 @@ from typing import Any
 
 from complex_epidemics.agents.disease import Disease
 from complex_epidemics.agents.support_objects.time_counter import TimeCounter
-from complex_epidemics.model.support_objects.abstract_model_stepper import IModelStepper
+from complex_epidemics.model.support_objects.abstract_model_step_helpers import (
+    IModelStepper,
+)
 
 LOG = logging.getLogger(__name__)
 

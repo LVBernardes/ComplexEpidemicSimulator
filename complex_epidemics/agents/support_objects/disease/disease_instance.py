@@ -6,7 +6,9 @@ from complex_epidemics.agents.support_objects.disease.disease_states_and_symptom
     Symptoms,
 )
 from complex_epidemics.agents.support_objects.time_counter import TimeCounter
-from complex_epidemics.model.support_objects.abstract_model_stepper import IModelStepper
+from complex_epidemics.model.support_objects.abstract_model_step_helpers import (
+    IModelStepper,
+)
 
 
 class DiseaseInstance(IModelStepper):

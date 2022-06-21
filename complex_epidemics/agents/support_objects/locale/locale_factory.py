@@ -6,19 +6,21 @@ from complex_epidemics.model.simulation_model import SimulationModel
 from complex_epidemics.utils.capacity_utils import CapUtils
 from complex_epidemics.utils.id_utils import IDUtils
 from complex_epidemics.agents.locale import (
-    HouseholdCategory,
     Locale,
     Household,
     Workplace,
-    WorkplaceCategory,
     EducationalInstitution,
-    EducationalInstitutionCategory,
     HealthCareUnit,
-    HealthCareCategory,
     PublicPlace,
-    PublicPlaceCategory,
     CustomerServicesPlace,
     NonCustomerServicesPlace,
+)
+from complex_epidemics.agents.support_objects.locale.locale_categories import (
+    EducationalInstitutionCategory,
+    HealthCareCategory,
+    HouseholdCategory,
+    PublicPlaceCategory,
+    WorkplaceCategory,
 )
 
 LOG = logging.getLogger(__name__)

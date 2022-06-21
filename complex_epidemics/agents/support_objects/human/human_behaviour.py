@@ -1,9 +1,19 @@
-from complex_epidemics.model.support_objects.abstract_model_stepper import IModelStepper
+from complex_epidemics.model.support_objects.abstract_model_step_helpers import (
+    IModelAdvancer,
+)
 
 
-class HumanBehaviour(IModelStepper):
+class HumanBehaviour(IModelAdvancer):
     def __init__(self) -> None:
         pass
 
-    def step(self):
+    def advance(self):
+        pass
+
+
+class StandardBehaviour(HumanBehaviour):
+    def __init__(self) -> None:
+        pass
+
+    def advance(self):
         pass

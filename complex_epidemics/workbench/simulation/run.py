@@ -11,5 +11,10 @@ class Run:
     model: Model = field()
     stop_criteria: dict = field()
 
-    def run(self):
-        pass
+    def execute(self):
+        steps = self.stop_criteria.get("steps", None)
+
+        if steps is not None:
+            step_counter = 0
+            while step_counter <= steps:
+                self.model.step()

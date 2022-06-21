@@ -28,3 +28,12 @@ class MissingDataError(ValueError):
     """
 
     pass
+
+
+class InvalidActionError(Exception):
+    """Invalid exception.
+
+    Raised when an action is not .
+    """
+
+    pass

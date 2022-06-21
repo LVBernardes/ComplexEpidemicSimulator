@@ -4,7 +4,9 @@ import sys
 from complex_epidemics.agents.support_objects.base_agents import MobileAgent
 from complex_epidemics.agents.support_objects.human.human_attributes import HumanHealth
 from complex_epidemics.model.simulation_model import SimulationModel
-from complex_epidemics.model.support_objects.abstract_model_stepper import IModelStepper
+from complex_epidemics.model.support_objects.abstract_model_step_helpers import (
+    IModelStepper,
+)
 from complex_epidemics.utils.step_utils import StepUtils
 
 LOG = logging.getLogger(__name__)

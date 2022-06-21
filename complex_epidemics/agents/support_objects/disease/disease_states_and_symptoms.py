@@ -5,7 +5,9 @@ import numpy as np
 
 from complex_epidemics.agents.support_objects.human.human_attributes import HealthState
 from complex_epidemics.agents.support_objects.time_counter import TimeCounter
-from complex_epidemics.model.support_objects.abstract_model_stepper import IModelStepper
+from complex_epidemics.model.support_objects.abstract_model_step_helpers import (
+    IModelStepper,
+)
 
 
 class DiseaseInstanceState(Enum):
