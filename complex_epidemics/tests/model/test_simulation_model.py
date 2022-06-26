@@ -2,7 +2,7 @@ from pprint import pprint
 
 from complex_epidemics.agents.human import Human
 from complex_epidemics.agents.locale import Locale
-from complex_epidemics.agents.transport import Transport
+from complex_epidemics.agents.transport import PublicTransport, Transport
 from complex_epidemics.graph.networkx_engine.networkx_bipartitegraph import (
     NetworkxBipartiteGraph,
 )
@@ -76,6 +76,70 @@ class TestSimulationModel:
         expected_agent_id_list = human_agent_id_list
 
         result_agent_id_list = model.mobile_agents
+
+        assert expected_agent_id_list == result_agent_id_list
+
+    def test_method_locale_agents_getter(self):
+
+        model = SimulationModel()
+        locale_agent_id_list = list()
+        transport_agent_id_list = list()
+        for i in range(0, 10):
+            model.schedule.add(Locale(unique_id=i, model=model))
+            locale_agent_id_list.append(i)
+        for i in range(10, 20):
+            model.schedule.add(Transport(unique_id=i, model=model))
+            transport_agent_id_list.append(i)
+
+        expected_agent_id_list = locale_agent_id_list
+
+        result_agent_id_list = model.locale_agents
+
+        assert expected_agent_id_list == result_agent_id_list
+
+    def test_method_transport_agents_getter(self):
+
+        model = SimulationModel()
+        locale_agent_id_list = list()
+        transport_agent_id_list = list()
+        for i in range(0, 10):
+            model.schedule.add(Locale(unique_id=i, model=model))
+            locale_agent_id_list.append(i)
+        for i in range(10, 20):
+            model.schedule.add(Transport(unique_id=i, model=model))
+            transport_agent_id_list.append(i)
+
+        expected_agent_id_list = transport_agent_id_list
+
+        result_agent_id_list = model.transport_agents
+
+        assert expected_agent_id_list == result_agent_id_list
+
+    def test_method_get_public_transports_for_route(self):
+        model = SimulationModel()
+        locale_agent_id_list = list()
+        transport_agent_id_list = list()
+        for i in range(0, 10):
+            model.schedule.add(Locale(unique_id=i, model=model))
+            locale_agent_id_list.append(i)
+        for i in range(10, 15):
+            model.schedule.add(PublicTransport(unique_id=i, model=model))
+            transport_agent_id_list.append(i)
+
+        for i in range(10, 15):
+            model.schedule._agents[i].add_serviced_locale(i - 10)
+            model.schedule._agents[i].add_serviced_locale(i - 5)
+
+        result_agent_id_list = list()
+
+        for i in range(10, 15):
+            result_agent_id_list.append(
+                model.get_public_transports_for_route(
+                    origin=(i - 10), destination=(i - 5)
+                )[0]
+            )
+
+        expected_agent_id_list = transport_agent_id_list
 
         assert expected_agent_id_list == result_agent_id_list
 

@@ -109,19 +109,19 @@ class TestHumanOccupation:
         model.step()
 
         result_generic_worker_occupation_locale_class = model.schedule._agents[
-            generic_worker.occupation.occupation_locale
+            generic_worker.occupation.occupation_locale.unique_id
         ].__class__.__name__
         result_generic_student_occupation_locale_class = model.schedule._agents[
-            generic_student.occupation.occupation_locale
+            generic_student.occupation.occupation_locale.unique_id
         ].__class__.__name__
         result_generic_unoccupation_locale_class = model.schedule._agents[
-            generic_unoccupied.occupation.occupation_locale
+            generic_unoccupied.occupation.occupation_locale.unique_id
         ].__class__.__name__
         result_generic_health_worker_locale_class = model.schedule._agents[
-            generic_health_worker.occupation.occupation_locale
+            generic_health_worker.occupation.occupation_locale.unique_id
         ].__class__.__name__
         result_generic_public_worker_locale_class = model.schedule._agents[
-            generic_public_worker.occupation.occupation_locale
+            generic_public_worker.occupation.occupation_locale.unique_id
         ].__class__.__name__
 
         expected_generic_worker_occupation_locale_class = "Workplace"

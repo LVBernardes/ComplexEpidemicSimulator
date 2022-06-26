@@ -31,9 +31,18 @@ class MissingDataError(ValueError):
 
 
 class InvalidActionError(Exception):
-    """Invalid exception.
+    """Invalid action exception.
 
-    Raised when an action is not .
+    Raised when an action is not valid or not implemented.
+    """
+
+    pass
+
+
+class ConfigurationError(ValueError):
+    """Configuration Error exception.
+
+    Raised when a configuration was not correctly set.
     """
 
     pass

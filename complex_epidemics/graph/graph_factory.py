@@ -4,8 +4,8 @@ Component of factory pattern used for graph provisioning.
 """
 import importlib
 
-from complex_epidemics.graph.abstract_bipartite_graph import AbstractBipartiteGraph
-from complex_epidemics.graph.abstract_graph import AbstractGraph
+from complex_epidemics.graph.support_objects.abstract_bipartite_graph import AbstractBipartiteGraph
+from complex_epidemics.graph.support_objects.abstract_graph import AbstractGraph
 from complex_epidemics.graph.graph_engine import GraphEngine
 from complex_epidemics.graph.graph_type import GraphType
 

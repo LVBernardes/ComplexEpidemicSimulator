@@ -7,7 +7,7 @@ from typing import Any
 
 import networkx as nx
 
-from complex_epidemics.graph.abstract_graph import AbstractGraph
+from complex_epidemics.graph.support_objects.abstract_graph import AbstractGraph
 from complex_epidemics.utils.log_messages import LogMessage
 
 LOG = logging.getLogger(__name__)

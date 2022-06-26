@@ -1,7 +1,6 @@
 import importlib
+from typing import Any
 
-from complex_epidemics.agents.disease import Disease
-from complex_epidemics.agents.human import Human
 from complex_epidemics.agents.support_objects.disease.disease_instance import (
     DiseaseInstance,
 )
@@ -38,7 +37,7 @@ class DiseaseInstanceBuilder(IDiseaseInstanceBuilder):
         self.disease_symptoms_states = dict()
         self.disease_recipe = None
 
-    def set_disease_instance_platform(self, disease: Disease, host: Human):
+    def set_disease_instance_platform(self, disease: Any, host: Any):
         self.new_disease_instance = DiseaseInstance()
         self.new_disease_instance.disease = disease
         self.new_disease_instance.host = host
@@ -87,7 +86,6 @@ class DiseaseInstanceBuilder(IDiseaseInstanceBuilder):
                     )
             else:
                 raise ValueError("Evaluator class not implemented.")
-            print(evaluator)
             new_built_state._transition_evaluator = evaluator
             all_states[key] = new_built_state
 

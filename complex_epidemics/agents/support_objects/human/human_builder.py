@@ -2,6 +2,9 @@ import logging
 from typing import Any
 
 from complex_epidemics.agents.human import Human
+from complex_epidemics.agents.support_objects.human.high_level_human_behaviour import (
+    HighLevelBehaviour,
+)
 from complex_epidemics.agents.support_objects.human.human_attributes import (
     HumanHealth,
     HumanPhysical,
@@ -9,9 +12,9 @@ from complex_epidemics.agents.support_objects.human.human_attributes import (
     HumanSocial,
 )
 from complex_epidemics.agents.support_objects.human.human_occupation import Occupation
-from complex_epidemics.agents.support_objects.human.human_behaviour import (
-    HumanBehaviour,
-    StandardBehaviour,
+from complex_epidemics.agents.support_objects.human.low_level_human_behaviour import (
+    LowLevelBehaviour,
+    Routine,
 )
 from complex_epidemics.model.simulation_model import SimulationModel
 from complex_epidemics.utils.id_utils import IDUtils
@@ -28,7 +31,8 @@ class HumanBuilder:
         "_social_attrs",
         "_physical_attrs",
         "_psychological_attrs",
-        "_behaviour",
+        "_routine",
+        "_high_level_behaviour",
         "_occupation",
     ]
 
@@ -39,7 +43,8 @@ class HumanBuilder:
         self._social_attrs = None
         self._physical_attrs = None
         self._psychological_attrs = None
-        self._behaviour = None
+        self._routine = None
+        self._high_level_behaviour = None
         self._occupation = None
 
     def get_result(self) -> Human:
@@ -54,7 +59,8 @@ class HumanBuilder:
         self._social_attrs = None
         self._physical_attrs = None
         self._psychological_attrs = None
-        self._behaviour = None
+        self._routine = None
+        self._high_level_behaviour = None
         self._occupation = None
 
     def build(self) -> None:
@@ -69,13 +75,18 @@ class HumanBuilder:
                 self._new_human.unique_id
             )
             self._new_human.model.schedule.add(self._new_human)
-            self._new_human.health = self._health
+            self._new_human.health = self._health if self._health else HumanHealth()
             self._new_human.social = self._social_attrs
             self._new_human.physical = self._physical_attrs
             self._new_human.psychological = self._psychological_attrs
-            self._new_human.behaviour = self._behaviour
+            self._new_human.routine = self._routine
+            self._new_human._low_level_behaviour = LowLevelBehaviour(
+                self._new_human, routine=self._routine
+            )
+            self._new_human._high_level_behaviour = self._high_level_behaviour
             self._new_human.occupation = self._occupation
             self._new_human.occupation._human = self._new_human
+            LOG.debug(f"{self._new_human.health}")
         except Exception as err:
             LOG.exception(err)
 
@@ -106,11 +117,11 @@ class HumanBuilder:
         else:
             self._psychological_attrs = None
 
-    def set_behaviour_controller(self, attrs: Any = None) -> None:
-        if attrs is not None:
-            self._behaviour = HumanBehaviour()
-        else:
-            self._behaviour = StandardBehaviour()
+    def set_routine(self, routine: Routine) -> None:
+        self._routine = routine
+
+    def set_high_level_behaviour_controller(self) -> None:
+        self._high_level_behaviour = HighLevelBehaviour()
 
     def set_occupation(self, occupation: Occupation = None) -> None:
         if occupation is not None:

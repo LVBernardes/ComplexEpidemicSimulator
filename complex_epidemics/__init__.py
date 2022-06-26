@@ -53,7 +53,7 @@ logging.config.dictConfig(
         },
         "handlers": {
             "console_handler": {
-                "level": "DEBUG",
+                "level": "INFO",
                 "class": "logging.StreamHandler",
                 "formatter": "console_fmt",
             },

@@ -117,7 +117,7 @@ class Occupation(IModelStepper):
                             f'Assigning agent with ID "{self._human.graph_node_id}" and occupation "{self.category.__class__.__name__}.{self.category.name}" to locale with ID "{real_locale_id}" and class"{real_locale.__class__.__name__}".'
                         )
                         real_locale.add_assigned_occupant(self._human.graph_node_id)
-                        self.occupation_locale = real_locale_id
+                        self.occupation_locale = real_locale
                         self.is_occupation_locale_assigned = True
                         return None
                 if not self.is_occupation_locale_assigned:

@@ -1,5 +1,6 @@
 import logging
 from types import NoneType
+from typing import Any
 
 from complex_epidemics.agents.support_objects.human.human_builder import HumanBuilder
 from complex_epidemics.agents.support_objects.human.human_occupation import (
@@ -11,6 +12,9 @@ from complex_epidemics.agents.support_objects.human.human_occupation_categories 
     GenericOccupationCategory,
     StudentCategory,
     WorkerCategory,
+)
+from complex_epidemics.agents.support_objects.human.low_level_human_behaviour import (
+    Routine,
 )
 from complex_epidemics.model.simulation_model import SimulationModel
 
@@ -34,24 +38,21 @@ class CitizenFactory:
 
     def new_worker(
         self, category: WorkerCategory = WorkerCategory.GENERIC, **kwargs
-    ) -> None:
-
-        attributes = dict()
-        if kwargs:
-            for key, value in kwargs.items():
-                attributes[key] = value
+    ) -> Any:
 
         try:
             new_occupation = Worker()
             new_occupation.category = category
             self._builder.set_simulation_model(simulation_model=self.model)
             self._builder.set_occupation(occupation=new_occupation)
-            self._builder.set_physical_attrs(attributes.get("physical_attrs", None))
-            self._builder.set_social_attrs(attributes.get("social_attrs", None))
+            self._builder.set_physical_attrs(kwargs.get("physical_attrs", None))
+            self._builder.set_social_attrs(kwargs.get("social_attrs", None))
             self._builder.set_psychological_attrs(
-                attributes.get("psychological_attrs", None)
+                kwargs.get("psychological_attrs", None)
             )
-            self._builder.set_behaviour_controller(attributes.get("behaviour", None))
+            self._builder.set_routine(routine=kwargs.get("routine", Routine.SIMPLE))
+            self._builder.set_high_level_behaviour_controller()
+            self._builder.set_health_attrs()
             self._builder.build()
             new_human = self._builder.get_result()
         except Exception as err:
@@ -61,23 +62,22 @@ class CitizenFactory:
 
     def new_student(
         self, category: StudentCategory = StudentCategory.GENERIC, **kwargs
-    ):
+    ) -> Any:
         attributes = dict()
-        if kwargs:
-            for key, value in kwargs.items():
-                attributes[key] = value
 
         try:
             new_occupation = Student()
             new_occupation.category = category
             self._builder.set_simulation_model(simulation_model=self.model)
             self._builder.set_occupation(occupation=new_occupation)
-            self._builder.set_physical_attrs(attributes.get("physical_attrs", None))
-            self._builder.set_social_attrs(attributes.get("social_attrs", None))
+            self._builder.set_physical_attrs(kwargs.get("physical_attrs", None))
+            self._builder.set_social_attrs(kwargs.get("social_attrs", None))
             self._builder.set_psychological_attrs(
-                attributes.get("psychological_attrs", None)
+                kwargs.get("psychological_attrs", None)
             )
-            self._builder.set_behaviour_controller(attributes.get("behaviour", None))
+            self._builder.set_routine(routine=kwargs.get("routine", Routine.SIMPLE))
+            self._builder.set_high_level_behaviour_controller()
+            self._builder.set_health_attrs()
             self._builder.build()
             new_human = self._builder.get_result()
         except Exception as err:
@@ -89,23 +89,22 @@ class CitizenFactory:
         self,
         category: GenericOccupationCategory = GenericOccupationCategory.GENERIC,
         **kwargs
-    ):
+    ) -> Any:
         attributes = dict()
-        if kwargs:
-            for key, value in kwargs.items():
-                attributes[key] = value
 
         try:
             new_occupation = GenericOccupation()
             new_occupation.category = category
             self._builder.set_simulation_model(simulation_model=self.model)
             self._builder.set_occupation(occupation=new_occupation)
-            self._builder.set_physical_attrs(attributes.get("physical_attrs", None))
-            self._builder.set_social_attrs(attributes.get("social_attrs", None))
+            self._builder.set_physical_attrs(kwargs.get("physical_attrs", None))
+            self._builder.set_social_attrs(kwargs.get("social_attrs", None))
             self._builder.set_psychological_attrs(
-                attributes.get("psychological_attrs", None)
+                kwargs.get("psychological_attrs", None)
             )
-            self._builder.set_behaviour_controller(attributes.get("behaviour", None))
+            self._builder.set_routine(routine=kwargs.get("routine", Routine.SIMPLE))
+            self._builder.set_high_level_behaviour_controller()
+            self._builder.set_health_attrs()
             self._builder.build()
             new_human = self._builder.get_result()
         except Exception as err:

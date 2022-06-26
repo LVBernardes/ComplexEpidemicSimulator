@@ -17,28 +17,34 @@ LOG = logging.getLogger(__name__)
 class Disease(Agent):
 
     __slots__ = (
-        "_disease_instance_prototype",
+        "_recipe",
         "_name",
         "_strain",
         "_immunity_window_in_days",
         "_infectivity",
+        "_is_initial_infection_setup",
+        "_initial_infected_population",
+        "_disease_instance_builder"
     )
 
     def __init__(self, unique_id: int, model: SimulationModel):
         super().__init__(unique_id=unique_id, model=model)
-        self._disease_instance_prototype = None
+        self._recipe = None
         self._name = None
         self._strain = None
         self._immunity_window_in_days: int = 0
         self._infectivity: float = 0.0
+        self._is_initial_infection_setup: bool = False
+        self._initial_infected_population: float = 0.0
+        self._disease_instance_builder: Any = None
 
     @property
-    def disease_instance_prototype(self) -> Any:
-        return self._disease_instance_prototype
+    def recipe(self) -> Any:
+        return self._recipe
 
-    @disease_instance_prototype.setter
-    def disease_instance_prototype(self, value: Any) -> None:
-        self._disease_instance_prototype = value
+    @recipe.setter
+    def recipe(self, value: Any) -> None:
+        self._recipe = value
 
     @property
     def name(self) -> str:
@@ -72,16 +78,71 @@ class Disease(Agent):
     def infectivity(self, value: float) -> None:
         self._infectivity = value
 
+    @property
+    def is_initial_infection_setup(self) -> bool:
+        return self._is_initial_infection_setup
+
+    @is_initial_infection_setup.setter
+    def is_initial_infection_setup(self, value: bool) -> None:
+        self._is_initial_infection_setup = value
+
+    @property
+    def initial_infected_population(self) -> float:
+        return self._initial_infected_population
+
+    @initial_infected_population.setter
+    def initial_infected_population(self, value: float) -> None:
+        self._initial_infected_population = value
+
     def get_container_agents(self) -> list:
         return self.model.container_agents
 
     def get_mobile_agents(self) -> list:
         return self.model.mobile_agents
 
+    def setup_initial_infection(self):
+        rng = np.random.default_rng()
+
+        if self.initial_infected_population >= 1.0:
+            susceptible_host_list = self.model.mobile_agents
+            number_infected_hosts = int(self.initial_infected_population)
+            for host_id in rng.choice(
+                susceptible_host_list, size=number_infected_hosts, replace=False
+            ).tolist():
+                host = self.model.schedule._agents[host_id]
+                self.set_new_infection(host)
+            self.is_initial_infection_setup = True
+
+        elif 0.0 < self.initial_infected_population < 1.0:
+            susceptible_host_list = self.model.mobile_agents
+            number_infected_hosts = round(
+                self.initial_infected_population * len(susceptible_host_list)
+            )
+            for host_id in rng.choice(
+                susceptible_host_list, size=number_infected_hosts, replace=False
+            ).tolist():
+                host = self.model.schedule._agents[host_id]
+                self.set_new_infection(host)
+            self.is_initial_infection_setup = True
+
+        elif self.initial_infected_population == 0.0:
+            LOG.error("Initial infected population value must be greater than ZERO.")
+            raise ValueError(
+                "Initial infected population value must be greater than ZERO."
+            )
+
+        else:
+            LOG.error(
+                "Initial infected population value must a positive, float number greater than ZERO."
+            )
+            raise ValueError(
+                "Initial infected population value must a positive, float number greater than ZERO."
+            )
+
     def get_susceptible_hosts(self, container_agent: ContainerAgent):
         susceptible_host_list = list()
         for host_id in container_agent.occupants:
-            host = self.model.schedule.agents[host_id]
+            host = self.model.schedule._agents[host_id]
             if host.health.is_susceptible:
                 susceptible_host_list.append(host_id)
         return susceptible_host_list
@@ -89,7 +150,7 @@ class Disease(Agent):
     def get_infectious_hosts(self, container_agent: ContainerAgent):
         infectious_host_list = list()
         for host_id in container_agent.occupants:
-            host = self.model.schedule.agents[host_id]
+            host = self.model.schedule._agents[host_id]
             if host.health.is_infectious:
                 infectious_host_list.append(host_id)
         return infectious_host_list
@@ -110,6 +171,22 @@ class Disease(Agent):
         container_agent.infectivity = infectivity
 
         return infectivity
+
+    def set_new_infection(self, host: Any) -> None:
+        if self._disease_instance_builder is None:
+            LOG.error("Disease instance builder is not available or not defined.")
+            raise ValueError(
+                "Disease instance builder is not available or not defined"
+            )
+
+        self._disease_instance_builder.set_disease_instance_platform(
+            disease=self, host=host
+        )
+        self._disease_instance_builder.set_disease_recipe(recipe=self.recipe.value)
+        self._disease_instance_builder.build()
+        new_infection = self._disease_instance_builder.get_result()
+        host.health.add_disease_instance(new_infection)
+        LOG.info(f"Agent infected: '{host.unique_id}'.")
 
     def try_infecting_host(self, host: Any, infectivity: float) -> bool:
 
@@ -164,15 +241,7 @@ class Disease(Agent):
         LOG.debug(f"New infection: {infect_host}.")
 
         if infect_host:
-            if self.disease_instance_prototype is None:
-                LOG.error("Disease instance prototype is not available or not defined.")
-                raise ValueError(
-                    "Disease instance prototype is not available or not defined"
-                )
-
-            new_infection = copy.deepcopy(self.disease_instance_prototype)
-            new_infection.host = host
-            host.health.add_disease_instance(new_infection)
+            self.set_new_infection(host=host)
             return True
         else:
             return False
@@ -185,7 +254,7 @@ class Disease(Agent):
         )
 
         for potential_host_id in susceptible_hosts:
-            potential_host = self.model.schedule.agents[potential_host_id]
+            potential_host = self.model.schedule._agents[potential_host_id]
             self.try_infecting_host(
                 infectivity=container_infectivity, host=potential_host
             )
@@ -193,8 +262,10 @@ class Disease(Agent):
     def spread(self):
 
         for container_agent_id in self.get_container_agents():
-            container_obj = self.model.schedule.agents[container_agent_id]
+            container_obj = self.model.schedule._agents[container_agent_id]
             self.spread_through_container(container_agent=container_obj)
 
     def step(self):
+        if not self.is_initial_infection_setup:
+            self.setup_initial_infection()
         self.spread()

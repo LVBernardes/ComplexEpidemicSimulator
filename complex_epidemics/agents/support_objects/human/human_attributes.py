@@ -1,29 +1,20 @@
 import importlib
 import logging
-from enum import Enum
 from typing import Any
 
-from complex_epidemics.agents.disease import Disease
 from complex_epidemics.agents.support_objects.disease.immunity_instance import (
     ImmunityInstance,
 )
 from complex_epidemics.agents.support_objects.human.health_protection_measures import (
     ProtectionMeasureType,
 )
+from complex_epidemics.agents.support_objects.human.health_states import HealthState
 from complex_epidemics.model.support_objects.abstract_model_step_helpers import (
     IModelStepper,
 )
 from complex_epidemics.utils.exceptions import InvalidOptionError
 
 LOG = logging.getLogger(__name__)
-
-
-class HealthState(Enum):
-    HEALTHY = "Healthy"
-    SICK = "Sick"
-    DEBILITADED = "Debilitaded"
-    INCAPACITATED = "Incapacitated"
-    DECEASED = "Deceased"
 
 
 class HumanHealth(IModelStepper):

@@ -88,8 +88,10 @@ class DiseaseInstance(IModelStepper):
 
     def step(self):
         if self.active:
-            print(f"Disease instance clock: {self.clock.counter}")
-            print(f"Disease instance step counter: {self.step_counter}")
+            if self.host.health.is_susceptible:
+                self.host.health.is_susceptible = False
+            # print(f"Disease instance clock: {self.clock.counter}")
+            # print(f"Disease instance step counter: {self.step_counter}")
             if self.step_counter % self.disease.model.steps_per_day == 0:
                 self._state.step()
                 self.clock.increment()

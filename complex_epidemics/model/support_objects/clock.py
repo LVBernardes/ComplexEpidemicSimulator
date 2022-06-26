@@ -40,7 +40,7 @@ class Clock:
             LOG.exception(f"Failed to set datetime. Exception: {err}")
             raise
 
-    def get_datetime(self) -> str:
+    def get_datetime_formated(self) -> str:
         """Return a string with formatted datetime to minutes.
 
         Returns
@@ -49,6 +49,16 @@ class Clock:
             Formatted datetime to YYYY-MM-DDTHH-mm
         """
         return self._datetime.isoformat(timespec="minutes")
+
+    def get_datetime(self) -> datetime:
+        """Return a datetime object.
+
+        Returns
+        -------
+        datetime
+            Python datetime object.
+        """
+        return self._datetime
 
     def increment_time_in_hours(self, hours: int) -> str:
         """Advance Clock to a specified number of hours.

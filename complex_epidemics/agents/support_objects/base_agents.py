@@ -119,10 +119,10 @@ class ContainerAgent(Agent, GraphAgent):
         return self._assigned_occupations
 
     def add_assigned_occupant(self, agent_id) -> None:
-        self._occupants.add(agent_id)
+        self._assigned_occupants.add(agent_id)
 
     def remove_assigned_occupant(self, agent_id) -> None:
-        self._occupants.remove(agent_id)
+        self._assigned_occupants.remove(agent_id)
 
     def update_occupants_from_graph_edges(self):
         related_agents = set(self.model.graph.get_node_neighbours(self.graph_node_id))

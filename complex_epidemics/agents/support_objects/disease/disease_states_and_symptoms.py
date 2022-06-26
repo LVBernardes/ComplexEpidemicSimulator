@@ -1,13 +1,17 @@
+import logging
 from enum import Enum
 from typing import Any
 
 import numpy as np
 
-from complex_epidemics.agents.support_objects.human.human_attributes import HealthState
+from complex_epidemics.agents.support_objects.human.health_states import HealthState
 from complex_epidemics.agents.support_objects.time_counter import TimeCounter
 from complex_epidemics.model.support_objects.abstract_model_step_helpers import (
     IModelStepper,
 )
+
+
+LOG = logging.getLogger(__name__)
 
 
 class DiseaseInstanceState(Enum):
@@ -85,11 +89,11 @@ class BaseDiseaseInstanceState(IModelStepper):
     def make_transition(self) -> bool:
         evaluator = self._transition_evaluator
         probability_of_transition = evaluator.cdf(self.disease_instance.clock.counter)
-        print(f"Transition probability: {probability_of_transition} .")
+        # print(f"Transition probability: {probability_of_transition} .")
         result = np.random.choice(
             [True, False], p=[probability_of_transition, 1 - probability_of_transition]
         )
-        print(f"Make transition: {result} .")
+        # print(f"Make transition: {result} .")
         return result
 
     def choose_next_state(self) -> None:
@@ -102,14 +106,14 @@ class BaseDiseaseInstanceState(IModelStepper):
             a=list(choices_probs.keys()), p=list(choices_probs.values())
         )
         next_state = choices_names[chosen]
-        print(f"Next state: {next_state} .")
+        # print(f"Next state: {next_state} .")
         self.disease_instance.transition_to_state(next_state)
         self.disease_instance.host.health.health_state = HealthState[
             SymptomsToHealth[next_state[1].name].value
         ]
 
     def step(self):
-        print(f"{self.__class__.__name__} state Clock: {self.clock.counter}")
+        # print(f"{self.__class__.__name__} state Clock: {self.clock.counter}")
         if self.make_transition():
             self.choose_next_state()
         self.clock.increment()
@@ -122,7 +126,7 @@ class IncubatedNoSymptoms(BaseDiseaseInstanceState):
         self._symptoms = Symptoms.NONE
 
     def step(self):
-        print(f"{self.__class__.__name__} state Clock: {self.clock.counter}")
+        # print(f"{self.__class__.__name__} state Clock: {self.clock.counter}")
         if self.make_transition():
             self.choose_next_state()
             self.disease_instance.host.health.is_infectious = True
@@ -141,6 +145,7 @@ class NonInfectiousNoSymptoms(BaseDiseaseInstanceState):
         self.disease_instance.host.health.add_immunity_instance(
             disease=self.disease_instance.disease
         )
+        LOG.info(f"Agent recovered: '{self.disease_instance.host.unique_id}'.")
 
 
 class NonInfectiousDeath(BaseDiseaseInstanceState):

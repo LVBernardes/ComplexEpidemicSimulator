@@ -22,7 +22,7 @@ class TestClock:
             year=year, month=month, day=day, hour=hour, minute=minute
         ).isoformat(timespec="minutes")
 
-        assert new_clock.get_datetime() == test_datetime
+        assert new_clock.get_datetime_formated() == test_datetime
 
     def test_method_get_datetime(self):
 
@@ -36,7 +36,7 @@ class TestClock:
             year=year, month=month, day=day, hour=hour, minute=minute
         ).isoformat(timespec="minutes")
 
-        assert new_clock.get_datetime() == test_datetime
+        assert new_clock.get_datetime_formated() == test_datetime
 
     def test_method_increment_time_in_hours(self):
 
@@ -51,7 +51,7 @@ class TestClock:
             year=year, month=month, day=day, hour=hour, minute=minute
         ).isoformat(timespec="minutes")
 
-        assert new_clock.get_datetime() == test_datetime
+        assert new_clock.get_datetime_formated() == test_datetime
 
     def test_method_increment_time_in_days(self):
 
@@ -66,4 +66,4 @@ class TestClock:
             year=year, month=month, day=day, hour=hour, minute=minute
         ).isoformat(timespec="minutes")
 
-        assert new_clock.get_datetime() == test_datetime
+        assert new_clock.get_datetime_formated() == test_datetime

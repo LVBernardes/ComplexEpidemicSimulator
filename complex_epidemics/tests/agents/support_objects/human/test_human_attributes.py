@@ -8,9 +8,9 @@ from complex_epidemics.agents.support_objects.human.health_protection_measures i
     ProtectionMeasureType,
 )
 from complex_epidemics.agents.support_objects.human.human_attributes import (
-    HealthState,
     HumanHealth,
 )
+from complex_epidemics.agents.support_objects.human.health_states import HealthState
 from complex_epidemics.model.simulation_model import SimulationModel
 
 

@@ -1,4 +1,5 @@
 import logging
+from datetime import time
 
 from complex_epidemics.agents.support_objects.base_agents import ContainerAgent
 from complex_epidemics.agents.support_objects.human.human_occupation_categories import (
@@ -15,6 +16,10 @@ class Locale(ContainerAgent):
     def __init__(self, unique_id: int, model: SimulationModel):
         super().__init__(unique_id=unique_id, model=model)
         self._essential = False
+        self._activity_time: dict = {
+            "start_time": time(0, 0, 0),
+            "end_time": time(0, 0, 0),
+        }
         self._assigned_occupations: set[
             WorkerCategory, StudentCategory, GenericOccupationCategory
         ]
@@ -27,6 +32,10 @@ class Locale(ContainerAgent):
     def essential(self, value: bool) -> None:
         self._essential: bool = value
 
+    @property
+    def activity_time(self) -> dict:
+        return self._activity_time
+
     def step(self) -> None:
         self.update_occupants_from_graph_edges()
 
@@ -34,6 +43,11 @@ class Locale(ContainerAgent):
 class Household(Locale):
     def __init__(self, unique_id: int, model: SimulationModel):
         super().__init__(unique_id=unique_id, model=model)
+        self._essential = True
+        self._activity_time: dict = {
+            "start_time": time(9, 0, 0),
+            "end_time": time(18, 0, 0),
+        }
         self._assigned_occupations: set[GenericOccupationCategory] = {
             category for category in GenericOccupationCategory
         }
@@ -42,6 +56,11 @@ class Household(Locale):
 class Workplace(Locale):
     def __init__(self, unique_id: int, model: SimulationModel):
         super().__init__(unique_id=unique_id, model=model)
+        self._essential = False
+        self._activity_time: dict = {
+            "start_time": time(8, 00, 0),
+            "end_time": time(17, 00, 0),
+        }
         self._assigned_occupations: set[WorkerCategory] = {
             category
             for category in WorkerCategory
@@ -52,6 +71,11 @@ class Workplace(Locale):
 class EducationalInstitution(Locale):
     def __init__(self, unique_id: int, model: SimulationModel):
         super().__init__(unique_id=unique_id, model=model)
+        self._essential = False
+        self._activity_time: dict = {
+            "start_time": time(7, 0, 0),
+            "end_time": time(13, 0, 0),
+        }
         self._max_capacity_students: int = 0
         self._students_occupants: set[int] = set()
         self._assigned_occupations: set[StudentCategory] = {
@@ -88,6 +112,11 @@ class EducationalInstitution(Locale):
 class HealthCareUnit(Locale):
     def __init__(self, unique_id: int, model: SimulationModel):
         super().__init__(unique_id=unique_id, model=model)
+        self._essential = True
+        self._activity_time: dict = {
+            "start_time": time(8, 0, 0),
+            "end_time": time(17, 0, 0),
+        }
         self._max_capacity_patients: int = 0
         self._patients_occupants: set[int] = set()
         self._assigned_occupations: set[WorkerCategory] = {
@@ -124,6 +153,11 @@ class HealthCareUnit(Locale):
 class PublicPlace(Locale):
     def __init__(self, unique_id: int, model: SimulationModel):
         super().__init__(unique_id=unique_id, model=model)
+        self._essential = False
+        self._activity_time: dict = {
+            "start_time": time(7, 0, 0),
+            "end_time": time(21, 0, 0),
+        }
         self._assigned_occupations: set[WorkerCategory] = {
             category
             for category in WorkerCategory

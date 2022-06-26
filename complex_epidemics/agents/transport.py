@@ -34,17 +34,54 @@ class PublicTransport(Transport):
     def __init__(self, unique_id: int, model: SimulationModel):
         super().__init__(unique_id=unique_id, model=model)
         self._category = TransportCategory.MASS
+        self._serviced_locales_set: set = set()
+
+    @property
+    def serviced_locales_set(self) -> set:
+        return self._serviced_locales_set
+
+    def add_serviced_locale(self, locale: int | str) -> None:
+        self._serviced_locales_set.add(locale)
+
+    def remove_serviced_locale(self, locale: int | str) -> None:
+        self._serviced_locales_set.remove(locale)
+
+    def check_for_available_position(self) -> tuple[bool, bool]:
+        self.update_occupants_from_graph_edges()
+        has_position = (
+            True if self.occupancy < self.max_capacity_nominal else False,
+            True if self.occupancy < self.max_capacity_effective else False,
+        )
+        return has_position
 
 
 class PrivateTransport(Transport):
-    def __init__(self, unique_id: int, model: SimulationModel, owner: int = 0):
+    def __init__(self, unique_id: int, model: SimulationModel, household: int = 0):
         super().__init__(unique_id=unique_id, model=model)
-        self._owner: int = owner
+        self._household: int = household
+        self.in_use: bool = False
+        self.current_user: int | str = ""
 
     @property
-    def owner(self):
-        return self._owner
+    def household(self):
+        return self._household
 
-    @owner.setter
-    def owner(self, value: int):
-        self._owner = value
+    @household.setter
+    def household(self, value: int):
+        self._household = value
+
+    @property
+    def in_use(self) -> bool:
+        return self._in_use
+
+    @in_use.setter
+    def in_use(self, value: bool):
+        self._in_use = value
+
+    @property
+    def current_user(self) -> int | str:
+        return self._current_user
+
+    @current_user.setter
+    def current_user(self, user_id: int | str) -> None:
+        self._current_user = user_id

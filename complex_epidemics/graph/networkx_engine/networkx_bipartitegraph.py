@@ -5,7 +5,7 @@ import logging
 
 import networkx as nx
 
-from complex_epidemics.graph.abstract_bipartite_graph import AbstractBipartiteGraph
+from complex_epidemics.graph.support_objects.abstract_bipartite_graph import AbstractBipartiteGraph
 from complex_epidemics.graph.networkx_engine.networkx_graph import NetworkxGraph
 from complex_epidemics.utils.log_messages import LogMessage
 
