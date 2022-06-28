@@ -1,11 +1,13 @@
+import importlib
 import logging
-import sys
+from typing import Any, Union
 
-from complex_epidemics.agents.support_objects.base_agents import MobileAgent
+from complex_epidemics.agents.support_objects.base_agents import ContainerAgent, MobileAgent
 from complex_epidemics.agents.support_objects.human.human_attributes import (
-    HumanHealth,
+    HumanHealth, HumanPhysical, HumanPsychological, HumanSocial,
 )
 from complex_epidemics.agents.support_objects.human.health_states import HealthState
+from complex_epidemics.agents.support_objects.human.human_occupation import GenericOccupation
 from complex_epidemics.model.simulation_model import SimulationModel
 from complex_epidemics.model.support_objects.abstract_model_step_helpers import (
     IModelStepper,
@@ -58,7 +60,43 @@ class Human(MobileAgent, IModelStepper):
     def check_if_alive(self):
         if self.health and self.health.health_state == HealthState.DECEASED:
             self.is_alive = False
+            self.change_position(self.household.graph_node_id)
             LOG.info(f"Agent deceased: '{self.unique_id}'.")
+
+    def add_social_attribute(self, **kwargs) -> None:
+        self.social = HumanSocial(**kwargs)
+
+    def remove_social_attribute(self) -> None:
+        self.social = None
+
+    def add_physical_attribute(self, **kwargs) -> None:
+        self.physical = HumanPhysical(**kwargs)
+
+    def remove_physical_attribute(self) -> None:
+        self.physical = None
+
+    def add_psychological_attribute(self, **kwargs) -> None:
+        self.psychological = HumanPsychological(**kwargs)
+
+    def remove_psychological_attribute(self) -> None:
+        self.psychological = None
+
+    def add_occupation_attribute(self, locale: ContainerAgent, category: Any) -> None:
+        occupation_module = importlib.import_module(
+            f'complex_epidemics.agents.support_objects.human.human_occupation'
+        )
+        occupation_class = getattr(occupation_module, category.value)
+        self.occupation = occupation_class()
+        self.occupation.locale = locale
+
+    def remove_occupation_attribute(self) -> None:
+        self.occupation = None
+
+    def add_household_attribute(self, locale: ContainerAgent) -> None:
+        self.household = locale
+
+    def remove_household_attribute(self) -> None:
+        self.household = None
 
     def step(self) -> None:
         if self.is_alive:
@@ -73,4 +111,3 @@ class Human(MobileAgent, IModelStepper):
     def advance(self) -> None:
         if self.is_alive and self._high_level_behaviour:
             self._high_level_behaviour.advance()
-

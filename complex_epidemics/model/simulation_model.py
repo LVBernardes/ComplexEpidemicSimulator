@@ -4,10 +4,12 @@
 
 
 import logging
+from typing import Union
 
 from mesa.datacollection import DataCollector
 from mesa import Model
 
+from complex_epidemics.graph.networkx_engine.networkx_bipartitegraph import NetworkxBipartiteGraph
 from complex_epidemics.model.model_scheduler import ModelScheduler
 from complex_epidemics.model.support_objects.clock import Clock
 from complex_epidemics.model.support_objects.data_collectors import ModelCollectors
@@ -25,6 +27,11 @@ class SimulationModel(Model):
         "_steps_per_day",
         "_activation_order",
         "_is_activation_order_configured",
+        "_container_agents",
+        "_mobile_agents",
+        "_locale_agents",
+        "_transport_agents",
+        "_households"
         "datacollector",
     )
 
@@ -40,6 +47,7 @@ class SimulationModel(Model):
         self._mobile_agents: set = set()
         self._locale_agents: set = set()
         self._transport_agents: set = set()
+        self._households: set = set()
         self.datacollector = None
 
     @property
@@ -98,6 +106,9 @@ class SimulationModel(Model):
             self._transport_agents = self.get_agents_by_class("Transport")
             return self._transport_agents
 
+    def get_agent_by_id(self, agent_id: int):
+        return self.schedule._agents[agent_id]
+
     def get_agents_by_class(self, agent_class: str) -> list[int]:
 
         try:
@@ -131,17 +142,20 @@ class SimulationModel(Model):
             self.is_activation_order_configured = True
 
     def get_public_transports_for_route(
-        self, origin: int | str, destination: int | str
+        self, origin: Union[int, str], destination: Union[int, str]
     ) -> list:
         transports = list()
         for agent_id in set(self.transport_agents):
-            agent = self.schedule._agents[agent_id]
+            agent = self.get_agent_by_id(agent_id)
             if (
                 origin in agent.serviced_locales_set
                 and destination in agent.serviced_locales_set
             ):
                 transports.append(agent_id)
         return transports
+
+    def assign_individuals_occupations(self):
+        pass
 
     def step(self):
         if not self.is_activation_order_configured:
@@ -151,6 +165,7 @@ class SimulationModel(Model):
         if self.datacollector is None:
             self.datacollector = DataCollector(
                 model_reporters={
+                    "Clock": ModelCollectors.collect_model_clock,
                     "Susceptible": ModelCollectors.collect_susceptible_population,
                     "Incubated": ModelCollectors.collect_incubated_no_symptoms_population,
                     "Infectious-Asymptomatic": ModelCollectors.collect_infectious_no_symptoms_population,
@@ -159,6 +174,7 @@ class SimulationModel(Model):
                     "Infectious-CriticalSymptoms": ModelCollectors.collect_infectious_critical_symptoms_population,
                     "Recovered-TemporaryImmunity": ModelCollectors.collect_recovered_immune_population,
                     "Deceased": ModelCollectors.collect_deceased_population,
+                    "HealthCareUnit-OccupiedBeds": ModelCollectors.collect_patients_occupancy
                 }
             )
 

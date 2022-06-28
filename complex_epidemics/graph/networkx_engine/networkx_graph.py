@@ -3,7 +3,7 @@
 """
 
 import logging
-from typing import Any
+from typing import Any, Union
 
 import networkx as nx
 
@@ -28,76 +28,76 @@ class NetworkxGraph(AbstractGraph):
         except BaseException as err:
             LOG.exception(LogMessage.UNEXPECTEDEXCEPTION)
 
-    def add_node(self, node_id: int | str, **node_attrs) -> None:
+    def add_node(self, node_id: Union[int, str], **node_attrs) -> None:
         try:
             self._graph.add_node(node_for_adding=node_id, **node_attrs)
         except BaseException as err:
             LOG.exception(LogMessage.UNEXPECTEDEXCEPTION)
 
-    def get_node(self, node_id: int | str) -> Any:
+    def get_node(self, node_id: Union[int, str]) -> Any:
         try:
             return self._graph.nodes[node_id]
         except BaseException as err:
             LOG.exception(LogMessage.UNEXPECTEDEXCEPTION)
 
-    def remove_node(self, node_id: int | str):
+    def remove_node(self, node_id: Union[int, str]):
         try:
             self._graph.remove_node(n=node_id)
         except BaseException as err:
             LOG.exception(LogMessage.UNEXPECTEDEXCEPTION)
 
-    def add_node_attributes(self, node_id: int | str, node_attrs: dict) -> None:
+    def add_node_attributes(self, node_id: Union[int, str], node_attrs: dict) -> None:
         try:
             for key, value in node_attrs.items():
                 self._graph.nodes[node_id][key] = value
         except BaseException as err:
             LOG.exception(LogMessage.UNEXPECTEDEXCEPTION)
 
-    def get_node_attributes(self, node_id: int | str) -> dict:
+    def get_node_attributes(self, node_id: Union[int, str]) -> dict:
         try:
             return self._graph.nodes[node_id]
         except BaseException as err:
             LOG.exception(LogMessage.UNEXPECTEDEXCEPTION)
 
-    def has_node(self, node_id: int | str) -> bool:
+    def has_node(self, node_id: Union[int, str]) -> bool:
         return self._graph.has_node(n=node_id)
 
     def get_nodes(
-        self, attrs_data: str | bool = False
-    ) -> list[tuple] | list[str | int]:
+        self, attrs_data: Union[str, bool] = False
+    ) -> Union[list[tuple], list[Union[str, int]]]:
         try:
             return list(self._graph.nodes(data=attrs_data))
         except BaseException as err:
             LOG.exception(LogMessage.UNEXPECTEDEXCEPTION)
 
-    def get_node_neighbours(self, node_id: int | str) -> list:
+    def get_node_neighbours(self, node_id: Union[int, str]) -> list:
         try:
             return self._graph.neighbors(n=node_id)
         except BaseException as err:
             LOG.exception(LogMessage.UNEXPECTEDEXCEPTION)
 
     def add_edge(
-        self, node_u_id: int | str, node_v_id: int | str, **edge_attrs
+        self, node_u_id: Union[int, str], node_v_id: Union[int, str], **edge_attrs
     ) -> None:
         try:
             self._graph.add_edge(u_of_edge=node_u_id, v_of_edge=node_v_id, **edge_attrs)
         except BaseException as err:
             LOG.exception(LogMessage.UNEXPECTEDEXCEPTION)
 
-    def get_edges(self, node_id: int | str = None) -> list:
+    def get_edges(self, node_id: Union[int, str] = None) -> list:
         try:
             return list(self._graph.edges(nbunch=node_id))
         except BaseException as err:
             LOG.exception(LogMessage.UNEXPECTEDEXCEPTION)
 
-    def remove_edge(self, node_u_id: int | str, node_v_id: int | str) -> None:
+    def remove_edge(self, node_u_id: Union[int, str], node_v_id: Union[int, str]) -> None:
         try:
             self._graph.remove_edge(u=node_u_id, v=node_v_id)
         except BaseException as err:
             LOG.exception(LogMessage.UNEXPECTEDEXCEPTION)
 
     def add_edge_attributes(
-        self, node_u_id: int | str, node_v_id: int | str, edge_attrs: dict
+        self, node_u_id: Union[int, str], node_v_id: Union[int, str], edge_attrs: dict
     ) -> None:
         try:
             for key, value in edge_attrs.items():
@@ -105,11 +105,11 @@ class NetworkxGraph(AbstractGraph):
         except BaseException as err:
             LOG.exception(LogMessage.UNEXPECTEDEXCEPTION)
 
-    def get_edge_attributes(self, node_u_id: int | str, node_v_id: int | str) -> dict:
+    def get_edge_attributes(self, node_u_id: Union[int, str], node_v_id: Union[int, str]) -> dict:
         try:
             return self._graph.edges[node_u_id, node_v_id]
         except BaseException as err:
             LOG.exception(LogMessage.UNEXPECTEDEXCEPTION)
 
-    def has_edge(self, node_u_id: int | str, node_v_id: int | str) -> bool:
+    def has_edge(self, node_u_id: Union[int, str], node_v_id: Union[int, str]) -> bool:
         return self._graph.has_edge(u=node_u_id, v=node_v_id)

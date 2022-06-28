@@ -208,11 +208,11 @@ class TestSimulationModel:
             transport_occupants[j] = list()
 
             for i in range(0, 10):
-                occupants = model.schedule._agents[i].occupants
+                occupants = model.schedule._agents[i].all_individuals
                 locale_occupants[j].extend(occupants) if len(occupants) > 0 else None
                 print(f"Locale {i} has: {occupants}")
             for i in range(10, 20):
-                occupants = model.schedule._agents[i].occupants
+                occupants = model.schedule._agents[i].all_individuals
                 transport_occupants[j].extend(occupants) if len(occupants) > 0 else None
                 print(f"Transport {i} has: {occupants}")
             for i in range(20, 30):
@@ -227,11 +227,11 @@ class TestSimulationModel:
         locale_occupants[2] = list()
         transport_occupants[2] = list()
         for i in range(0, 10):
-            occupants = model.schedule._agents[i].occupants
+            occupants = model.schedule._agents[i].all_individuals
             locale_occupants[2].extend(occupants) if len(occupants) > 0 else None
             print(f"Locale {i} has: {occupants}")
         for i in range(10, 20):
-            occupants = model.schedule._agents[i].occupants
+            occupants = model.schedule._agents[i].all_individuals
             transport_occupants[2].extend(occupants) if len(occupants) > 0 else None
             print(f"Transport {i} has: {occupants}")
 

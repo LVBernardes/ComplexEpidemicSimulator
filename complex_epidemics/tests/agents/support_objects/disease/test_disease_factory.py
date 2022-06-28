@@ -19,9 +19,8 @@ class TestDiseaseFactory:
 
         new_factory = DiseaseFactory()
 
-        new_disease = new_factory.covid_19_standard(model=SimulationModel(), initial_infected=1)
-
-        assert (
-            isinstance(new_disease, Disease)
-            and new_disease.name == "COVID-19"
+        new_disease = new_factory.covid_19_standard(
+            model=SimulationModel(), initial_infected=1
         )
+
+        assert isinstance(new_disease, Disease) and new_disease.name == "COVID-19"

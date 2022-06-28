@@ -1,18 +1,20 @@
 name: complex-epidemics-simulator
 channels:
-  - defaults
   - conda-forge
 dependencies:
-  - python=3.10.*
+  - python=3.9.*
   - numpy
   - matplotlib
   - jupyter
   - pandas
   - mesa
-  - pip
   - networkx
   - black
   - pylint
   - attrs
   - pytest
   - pytest-cov
+  - ipympl
+  - scipy
+  - seaborn
+

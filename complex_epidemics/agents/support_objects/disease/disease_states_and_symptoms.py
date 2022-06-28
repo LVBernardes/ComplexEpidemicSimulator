@@ -112,7 +112,7 @@ class BaseDiseaseInstanceState(IModelStepper):
             SymptomsToHealth[next_state[1].name].value
         ]
 
-    def step(self):
+    def step(self) -> None:
         # print(f"{self.__class__.__name__} state Clock: {self.clock.counter}")
         if self.make_transition():
             self.choose_next_state()
@@ -125,12 +125,14 @@ class IncubatedNoSymptoms(BaseDiseaseInstanceState):
         self._infection_state = DiseaseInstanceState.INCUBATED
         self._symptoms = Symptoms.NONE
 
-    def step(self):
+    def step(self) -> None:
         # print(f"{self.__class__.__name__} state Clock: {self.clock.counter}")
         if self.make_transition():
             self.choose_next_state()
             self.disease_instance.host.health.is_infectious = True
-        self.clock.increment()
+            LOG.info(f"Host '{self.disease_instance.host.unique_id} is now infectious.'")
+        else:
+            self.clock.increment()
 
 
 class NonInfectiousNoSymptoms(BaseDiseaseInstanceState):
@@ -139,7 +141,7 @@ class NonInfectiousNoSymptoms(BaseDiseaseInstanceState):
         self._infection_state = DiseaseInstanceState.NONINFECTIOUS
         self._symptoms = Symptoms.NONE
 
-    def step(self):
+    def step(self) -> None:
         self.disease_instance.host.health.is_infectious = False
         self.disease_instance.active = False
         self.disease_instance.host.health.add_immunity_instance(
@@ -154,7 +156,7 @@ class NonInfectiousDeath(BaseDiseaseInstanceState):
         self._infection_state = DiseaseInstanceState.NONINFECTIOUS
         self._symptoms = Symptoms.DEATH
 
-    def step(self):
+    def step(self) -> None:
         self.disease_instance.host.health.is_infectious = False
         self.disease_instance.active = False
 

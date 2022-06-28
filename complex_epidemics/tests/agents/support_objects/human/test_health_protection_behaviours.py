@@ -34,9 +34,9 @@ class TestHealthProtectionBehaviours:
         expected_social_distance_efficacy = 0.8
 
         assert (
-            new_hand_washing.get_efficacy() == expected_hand_washing_efficacy
-            and new_mask_wearing.get_efficacy() == expected_mask_wearing_efficacy
-            and new_social_distance.get_efficacy() == expected_social_distance_efficacy
+                new_hand_washing.get_efficacy == expected_hand_washing_efficacy
+                and new_mask_wearing.get_efficacy == expected_mask_wearing_efficacy
+                and new_social_distance.get_efficacy == expected_social_distance_efficacy
         )
 
     def test_method_change_application_quality(self):
@@ -71,9 +71,9 @@ class TestHealthProtectionBehaviours:
         expected_mask_wearing_efficacy = round(0.7 * 0.66, 3)
         expected_social_distance_efficacy = 0.8
 
-        real_hand_washing_efficacy = new_hand_washing.get_efficacy()
-        real_mask_wearing_efficacy = new_mask_wearing.get_efficacy()
-        real_social_distance_efficacy = new_social_distance.get_efficacy()
+        real_hand_washing_efficacy = new_hand_washing.get_efficacy
+        real_mask_wearing_efficacy = new_mask_wearing.get_efficacy
+        real_social_distance_efficacy = new_social_distance.get_efficacy
 
         assert (
             real_hand_washing_efficacy == expected_hand_washing_efficacy

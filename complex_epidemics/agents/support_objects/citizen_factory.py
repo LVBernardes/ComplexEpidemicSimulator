@@ -1,5 +1,4 @@
 import logging
-from types import NoneType
 from typing import Any
 
 from complex_epidemics.agents.support_objects.human.human_builder import HumanBuilder
@@ -63,7 +62,6 @@ class CitizenFactory:
     def new_student(
         self, category: StudentCategory = StudentCategory.GENERIC, **kwargs
     ) -> Any:
-        attributes = dict()
 
         try:
             new_occupation = Student()
@@ -90,7 +88,6 @@ class CitizenFactory:
         category: GenericOccupationCategory = GenericOccupationCategory.GENERIC,
         **kwargs
     ) -> Any:
-        attributes = dict()
 
         try:
             new_occupation = GenericOccupation()

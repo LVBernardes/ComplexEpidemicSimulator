@@ -1,5 +1,6 @@
 import logging
 from enum import Enum
+from typing import Union
 
 from complex_epidemics.agents.support_objects.base_agents import ContainerAgent
 from complex_epidemics.agents.support_objects.transport.transport_enums import (
@@ -27,7 +28,8 @@ class Transport(ContainerAgent):
         super().__init__(unique_id=unique_id, model=model)
 
     def step(self) -> None:
-        self.update_occupants_from_graph_edges()
+        self.update_all_individuals_from_graph_edges()
+        self.update_visiting_individuals()
 
 
 class PublicTransport(Transport):
@@ -40,14 +42,14 @@ class PublicTransport(Transport):
     def serviced_locales_set(self) -> set:
         return self._serviced_locales_set
 
-    def add_serviced_locale(self, locale: int | str) -> None:
+    def add_serviced_locale(self, locale: Union[int, str]) -> None:
         self._serviced_locales_set.add(locale)
 
-    def remove_serviced_locale(self, locale: int | str) -> None:
+    def remove_serviced_locale(self, locale: Union[int, str]) -> None:
         self._serviced_locales_set.remove(locale)
 
     def check_for_available_position(self) -> tuple[bool, bool]:
-        self.update_occupants_from_graph_edges()
+        self.update_all_individuals_from_graph_edges()
         has_position = (
             True if self.occupancy < self.max_capacity_nominal else False,
             True if self.occupancy < self.max_capacity_effective else False,
@@ -60,7 +62,7 @@ class PrivateTransport(Transport):
         super().__init__(unique_id=unique_id, model=model)
         self._household: int = household
         self.in_use: bool = False
-        self.current_user: int | str = ""
+        self.current_user: Union[int, str] = ""
 
     @property
     def household(self):
@@ -79,9 +81,13 @@ class PrivateTransport(Transport):
         self._in_use = value
 
     @property
-    def current_user(self) -> int | str:
+    def current_user(self) -> Union[int, str]:
         return self._current_user
 
     @current_user.setter
-    def current_user(self, user_id: int | str) -> None:
+    def current_user(self, user_id: Union[int, str]) -> None:
         self._current_user = user_id
+
+    def use_transport(self, user: Union[int, str]) -> None:
+        self.in_use = True
+        self.current_user = user

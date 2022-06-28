@@ -1,6 +1,6 @@
 import inspect
 import logging
-from typing import Any
+from typing import Any, Union
 
 LOG = logging.getLogger(__name__)
 
@@ -25,17 +25,17 @@ class StepUtils:
             return False
 
     @staticmethod
-    def remove_dunder_methods(__obj: list | set) -> list:
+    def remove_dunder_methods(__obj: Union[list, set]) -> list:
         return [method for method in __obj if method.endswith("__") is False]
 
     @staticmethod
-    def remove_protected_attributes(__obj: list | set) -> list:
+    def remove_protected_attributes(__obj: Union[list, set]) -> list:
         return [method for method in __obj if method.startswith("_") is False]
 
     @staticmethod
     def clean_attributes(
-        __obj: list | set, remove_dunder: bool = True, remove_protected: bool = False
-    ) -> list | None:
+        __obj: Union[list, set], remove_dunder: bool = True, remove_protected: bool = False
+    ) -> Union[list, None]:
         if remove_dunder and remove_protected:
             return StepUtils.remove_protected_attributes(
                 StepUtils.remove_protected_attributes(__obj)
@@ -49,8 +49,13 @@ class StepUtils:
 
     @staticmethod
     def get_elements_with_step_method(
-        __obj: Any, ref: str, remove_protected: bool = False
+        __obj: Any, ref: str, remove_protected: bool = False, recursion_count: int = 0
     ) -> list:
+        elements = list()
+        max_recursion_count = 2
+        if recursion_count > max_recursion_count:
+            return elements
+
         outer_element_name = ref
         outer_element_object = __obj
         outer_element_object_class_name = __obj.__class__.__name__
@@ -99,8 +104,6 @@ class StepUtils:
 
         intersection = outer_element_parent_class_set.intersection(blocked_list)
 
-        elements = list()
-
         if (
             StepUtils.has_step_method(
                 outer_element_object, remove_protected=remove_protected
@@ -126,6 +129,7 @@ class StepUtils:
                     inner_element_object,
                     inner_element_name,
                     remove_protected=remove_protected,
+                    recursion_count=(recursion_count + 1)
                 )
                 for inner in inner_elements:
                     if inner is not None or inner != []:

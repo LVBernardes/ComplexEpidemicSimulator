@@ -39,17 +39,17 @@ class TestLocale:
         new_health_care_unit = HealthCareUnit(unique_id=3, model=model)
 
         assert (
-            new_household.assigned_occupations
+            new_household.allowed_occupations
             == {category for category in GenericOccupationCategory}
-            and new_workplace.assigned_occupations
+            and new_workplace.allowed_occupations
             == {
                 category
                 for category in WorkerCategory
                 if category.name in {"GENERIC", "INDUSTRY", "SERVICES"}
             }
-            and new_educational_institution.assigned_occupations
+            and new_educational_institution.allowed_occupations
             == {category for category in StudentCategory}
-            and new_health_care_unit.assigned_occupations
+            and new_health_care_unit.allowed_occupations
             == {category for category in WorkerCategory if category.name == "HEALTH"}
         )
 
@@ -90,9 +90,9 @@ class TestEducationalInstitution:
             for i in range(11, 13):
                 locale_occupants[j][i] = list()
                 locale_special_occupants[j][i] = list()
-                occupants = model.schedule._agents[i].occupants
+                occupants = model.schedule._agents[i].all_individuals
                 locale_occupants[j][i].extend(occupants) if len(occupants) > 0 else None
-                special_occupants = model.schedule._agents[i].students_occupants
+                special_occupants = model.schedule._agents[i].students
                 locale_special_occupants[j][i].extend(special_occupants) if len(
                     special_occupants
                 ) > 0 else None
@@ -112,9 +112,9 @@ class TestEducationalInstitution:
         for i in range(11, 13):
             locale_occupants[2][i] = list()
             locale_special_occupants[2][i] = list()
-            occupants = model.schedule._agents[i].occupants
+            occupants = model.schedule._agents[i].all_individuals
             locale_occupants[2][i].extend(occupants) if len(occupants) > 0 else None
-            special_occupants = model.schedule._agents[i].students_occupants
+            special_occupants = model.schedule._agents[i].students
             locale_special_occupants[2][i].extend(special_occupants) if len(
                 special_occupants
             ) > 0 else None
@@ -176,9 +176,9 @@ class TestHealthCareUnit:
             for i in range(11, 13):
                 locale_occupants[j][i] = list()
                 locale_special_occupants[j][i] = list()
-                occupants = model.schedule._agents[i].occupants
+                occupants = model.schedule._agents[i].all_individuals
                 locale_occupants[j][i].extend(occupants) if len(occupants) > 0 else None
-                special_occupants = model.schedule._agents[i].patients_occupants
+                special_occupants = model.schedule._agents[i].all_patients
                 locale_special_occupants[j][i].extend(special_occupants) if len(
                     special_occupants
                 ) > 0 else None
@@ -198,9 +198,9 @@ class TestHealthCareUnit:
         for i in range(11, 13):
             locale_occupants[2][i] = list()
             locale_special_occupants[2][i] = list()
-            occupants = model.schedule._agents[i].occupants
+            occupants = model.schedule._agents[i].all_individuals
             locale_occupants[2][i].extend(occupants) if len(occupants) > 0 else None
-            special_occupants = model.schedule._agents[i].patients_occupants
+            special_occupants = model.schedule._agents[i].all_patients
             locale_special_occupants[2][i].extend(special_occupants) if len(
                 special_occupants
             ) > 0 else None

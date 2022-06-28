@@ -5,7 +5,9 @@
 import logging
 from typing import Any
 
-from complex_epidemics.graph.support_objects.abstract_graph_factory import AbstractGraphFactory
+from complex_epidemics.graph.support_objects.abstract_graph_factory import (
+    AbstractGraphFactory,
+)
 from complex_epidemics.graph.graph_type import GraphType
 from complex_epidemics.graph.networkx_engine.networkx_bipartitegraph import (
     NetworkxBipartiteGraph,

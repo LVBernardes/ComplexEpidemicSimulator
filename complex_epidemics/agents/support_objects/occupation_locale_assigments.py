@@ -35,3 +35,6 @@ class OccupationToLocale(Enum):
     GenericOccupationCategoryHOUSECARE = {HouseholdCategory.GENERIC.value}
     GenericOccupationCategoryRETIRED = {HouseholdCategory.GENERIC.value}
     GenericOccupationCategoryINFANT = {HouseholdCategory.GENERIC.value}
+
+class ContainerAgentToOccupation(Enum):
+

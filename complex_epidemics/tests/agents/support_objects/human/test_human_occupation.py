@@ -3,7 +3,7 @@ from complex_epidemics.agents.support_objects.human.human_occupation import Occu
 from complex_epidemics.agents.support_objects.human.human_occupation_categories import (
     WorkerCategory,
 )
-from complex_epidemics.agents.support_objects.infrastructure_builder import (
+from complex_epidemics.workbench.simulation.infrastructure_builder import (
     InfrastructureBuilder,
 )
 from complex_epidemics.agents.support_objects.locale.locale_categories import (
@@ -109,19 +109,19 @@ class TestHumanOccupation:
         model.step()
 
         result_generic_worker_occupation_locale_class = model.schedule._agents[
-            generic_worker.occupation.occupation_locale.unique_id
+            generic_worker.occupation.locale.unique_id
         ].__class__.__name__
         result_generic_student_occupation_locale_class = model.schedule._agents[
-            generic_student.occupation.occupation_locale.unique_id
+            generic_student.occupation.locale.unique_id
         ].__class__.__name__
         result_generic_unoccupation_locale_class = model.schedule._agents[
-            generic_unoccupied.occupation.occupation_locale.unique_id
+            generic_unoccupied.occupation.locale.unique_id
         ].__class__.__name__
         result_generic_health_worker_locale_class = model.schedule._agents[
-            generic_health_worker.occupation.occupation_locale.unique_id
+            generic_health_worker.occupation.locale.unique_id
         ].__class__.__name__
         result_generic_public_worker_locale_class = model.schedule._agents[
-            generic_public_worker.occupation.occupation_locale.unique_id
+            generic_public_worker.occupation.locale.unique_id
         ].__class__.__name__
 
         expected_generic_worker_occupation_locale_class = "Workplace"

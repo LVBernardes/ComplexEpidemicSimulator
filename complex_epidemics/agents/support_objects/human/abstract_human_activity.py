@@ -1,12 +1,11 @@
 import logging
 from abc import ABC, abstractmethod
 from datetime import time
-from typing import Any
+from typing import Any, Union
 
 from complex_epidemics.model.support_objects.abstract_model_step_helpers import (
     IModelStepper,
 )
-from complex_epidemics.utils.exceptions import ConfigurationError
 
 LOG = logging.getLogger(__name__)
 
@@ -174,7 +173,7 @@ class HumanBaseActivity(IModelStepper, ABC):
 
     def check_for_available_public_transport(
         self, destination: Any
-    ) -> int | str | None:
+    ) -> Union[int, str, None]:
         available_transports_ids = self._human.model.get_public_transports_for_route(
             origin=self._human.position, destination=destination
         )
@@ -182,7 +181,7 @@ class HumanBaseActivity(IModelStepper, ABC):
             available_transports_nominal_occupancy = dict()
             available_transports_effective_occupancy = dict()
             for transport_id in available_transports_ids:
-                transport = self._human.model.schedule._agents[transport_id]
+                transport = self._human.model.get_agent_by_id(transport_id)
                 position_availability = transport.check_for_available_position()
                 available_transports_nominal_occupancy[
                     transport.graph_node_id
@@ -265,7 +264,6 @@ class HumanBaseActivity(IModelStepper, ABC):
             self._human.health.health_state == self.final_state,
         )
 
-        # LOG.debug(f'End condition checker: calculated = ({duration_true}, {time_true}, {position_true}, {state_true}).')
         LOG.debug(f"End condition checker: calculated = {calculated_condition}.")
         LOG.debug(f"End condition checker: defined = {defined_condition}.")
 

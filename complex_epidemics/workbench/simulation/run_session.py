@@ -1,5 +1,4 @@
 import copy
-from collections import Counter
 from multiprocessing import Pool
 from typing import Any
 

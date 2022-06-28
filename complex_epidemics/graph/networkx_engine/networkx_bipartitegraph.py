@@ -2,10 +2,13 @@
 """Networkx engine bipartite graph module.
 """
 import logging
+from typing import Union
 
 import networkx as nx
 
-from complex_epidemics.graph.support_objects.abstract_bipartite_graph import AbstractBipartiteGraph
+from complex_epidemics.graph.support_objects.abstract_bipartite_graph import (
+    AbstractBipartiteGraph,
+)
 from complex_epidemics.graph.networkx_engine.networkx_graph import NetworkxGraph
 from complex_epidemics.utils.log_messages import LogMessage
 
@@ -16,7 +19,7 @@ class NetworkxBipartiteGraph(AbstractBipartiteGraph, NetworkxGraph):
     def __init__(self):
         super().__init__()
 
-    def add_node_to_component_zero(self, node_id: int | str) -> bool:
+    def add_node_to_component_zero(self, node_id: Union[int, str]) -> bool:
         if not self.has_node(node_id):
             try:
                 self.add_node(node_id, bipartite=0)
@@ -45,7 +48,7 @@ class NetworkxBipartiteGraph(AbstractBipartiteGraph, NetworkxGraph):
         except Exception as err:
             LOG.exception(LogMessage.UNEXPECTEDEXCEPTION)
 
-    def add_node_to_component_one(self, node_id: int | str) -> bool:
+    def add_node_to_component_one(self, node_id: Union[int, str]) -> bool:
         if not self.has_node(node_id):
             try:
                 self.add_node(node_id, bipartite=1)
@@ -74,7 +77,7 @@ class NetworkxBipartiteGraph(AbstractBipartiteGraph, NetworkxGraph):
         except Exception as err:
             LOG.exception(LogMessage.UNEXPECTEDEXCEPTION)
 
-    def get_node_component(self, node_id: int | str):
+    def get_node_component(self, node_id: Union[int, str]):
         if self.has_node(node_id):
             try:
                 component = nx.get_node_attributes(self._graph, "bipartite")

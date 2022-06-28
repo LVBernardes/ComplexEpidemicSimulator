@@ -24,3 +24,9 @@ class GenericOccupationCategory(Enum):
     HOUSECARE = "Housecare"
     RETIRED = "Retired"
     INFANT = "Infant"
+
+
+class TransportCategory(Enum):
+    GENERIC = "TransportDriver"
+    PUBLIC = "PublicTransportDriver"
+    PRIVATE = "PrivateTransportDriver"

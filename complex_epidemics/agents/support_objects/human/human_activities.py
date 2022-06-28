@@ -18,10 +18,10 @@ class OccupationActivity(HumanBaseActivity):
     def start_logic(self):
         self.time_controlled = True
         self.position_controlled = True
-        self.end_time = self.human.occupation.occupation_locale.activity_time.get(
+        self.end_time = self.human.occupation.locale.activity_time.get(
             "end_time"
         )
-        self.final_position = self.human.occupation.occupation_locale.graph_node_id
+        self.final_position = self.human.occupation.locale.graph_node_id
         self.define_movement_plan(destination=self.final_position)
 
     def activity_logic(self):
@@ -88,14 +88,29 @@ class SpecializedHealthCareActivity(HumanBaseActivity):
     def __init__(self, human: Any):
         super().__init__(human=human)
 
+    def find_available_health_care_units(self):
+        potential_units_id_list = self._human.model.get_agents_by_class('HealthCareUnit')
+        if potential_units_id_list:
+            for unit_id in potential_units_id_list:
+                unit = self._human.model.get_agent_by_id(unit_id)
+                if len(unit.all_patients) < unit.max_capacity_patients:
+                    return unit.graph_node_id
+            return self._human.household.graph_node_id
+        else:
+            return self._human.household.graph_node_id
+
     def start_logic(self):
         self.position_controlled = True
         self.state_controlled = True
-        self.initial_state = HealthState.DEBILITADED
-        self.final_state = HealthState.HEALTHY
+        self.final_position = self.find_available_health_care_units()
+        self.initial_state = HealthState.DEBILITADED or HealthState.INCAPACITATED
+        self.final_state = HealthState.HEALTHY or HealthState.DECEASED
+        self.define_movement_plan(destination=self.final_position)
 
     def activity_logic(self):
-        pass
+        if len(self.movement_plan) != 0:
+            # print(f"Agent next position: {self.movement_plan[0]}")
+            self._human.change_position(self.movement_plan.pop(0))
 
 
 class ReturnHomeActivity(HumanBaseActivity):

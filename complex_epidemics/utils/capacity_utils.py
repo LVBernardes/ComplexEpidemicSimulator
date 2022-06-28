@@ -3,7 +3,7 @@ import logging
 import numpy as np
 
 from complex_epidemics.utils.distributions_utils import DistUtils
-from complex_epidemics.utils.exceptions import MissingDataError
+from complex_epidemics.utils.exceptions import InvalidOptionError, MissingDataError
 
 LOG = logging.getLogger(__name__)
 
@@ -12,22 +12,21 @@ class CapUtils:
     @staticmethod
     def get_cap_value_from_distribution(dist_type: str, dist_params: list) -> int:
 
-        match dist_type.lower():
-            case "none":
-                cap = np.array(dist_params)
-            case "uniform":
-                cap = DistUtils.uniform(
-                    lower_bound=dist_params[0],
-                    upper_bound=dist_params[1],
-                )
-            case "normal":
-                cap = DistUtils.normal(
-                    mean=dist_params[0],
-                    standard_deviation=dist_params[1],
-                ).round()
-            case _:
-                LOG.error(f"Distribution type not implemented.")
-                raise InvalidOptionError("Distribution type not implemented.")
+        if dist_type.lower() == "none":
+            cap = np.array(dist_params)
+        elif dist_type.lower() == "uniform":
+            cap = DistUtils.uniform(
+                lower_bound=dist_params[0],
+                upper_bound=dist_params[1],
+            )
+        elif dist_type.lower() == "normal":
+            cap = DistUtils.normal(
+                mean=dist_params[0],
+                standard_deviation=dist_params[1],
+            ).round()
+        else:
+            LOG.error(f"Distribution type not implemented.")
+            raise InvalidOptionError("Distribution type not implemented.")
 
         cap = (cap.tolist())[0]
         LOG.debug(

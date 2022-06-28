@@ -25,6 +25,7 @@ class ImmunityInstance(IModelStepper):
         self._disease = disease
         self._expiration: int = disease.immunity_window_in_days
         self.clock: TimeCounter = TimeCounter()
+        self._step_counter: int = 0
 
     @property
     def active(self):
@@ -44,7 +45,7 @@ class ImmunityInstance(IModelStepper):
 
     @property
     def expiration(self) -> int:
-        return self.expiration
+        return self._expiration
 
     @expiration.setter
     def expiration(self, value: int) -> None:
@@ -58,7 +59,7 @@ class ImmunityInstance(IModelStepper):
     def step_counter(self, value: int) -> None:
         self._step_counter = value
 
-    def step(self):
+    def step(self) -> None:
         if self.active:
             LOG.debug(f"Immunity instance clock: {self.clock.counter}")
             LOG.debug(f"Immunity instance step counter: {self.step_counter}")
@@ -67,5 +68,4 @@ class ImmunityInstance(IModelStepper):
                     self.clock.increment()
                 else:
                     self.active = False
-                    return
             self.step_counter += 1

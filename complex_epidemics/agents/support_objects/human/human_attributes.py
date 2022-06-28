@@ -74,46 +74,45 @@ class HumanHealth(IModelStepper):
     def start_protection_measure(
         self, measure: ProtectionMeasureType, options: Any = None
     ) -> None:
-        match measure:
-            case ProtectionMeasureType.HANDWASHING:
+        if measure == ProtectionMeasureType.HANDWASHING:
+            measure_module = importlib.import_module(
+                f"complex_epidemics.agents."
+                f"support_objects.human."
+                f"health_protection_measures"
+            )
+            measure_class = getattr(
+                measure_module, f"{ProtectionMeasureType.HANDWASHING.value}"
+            )
+            measure_obj = measure_class()
+        elif measure == ProtectionMeasureType.MASKWEARING:
+            if options is None:
+                LOG.error("Missing mask type input.")
+                raise ValueError("Missing mask type input.")
+            else:
                 measure_module = importlib.import_module(
                     f"complex_epidemics.agents."
                     f"support_objects.human."
                     f"health_protection_measures"
                 )
                 measure_class = getattr(
-                    measure_module, f"{ProtectionMeasureType.HANDWASHING.value}"
+                    measure_module, f"{ProtectionMeasureType.MASKWEARING.value}"
                 )
-                measure_obj = measure_class()
-            case ProtectionMeasureType.MASKWEARING:
-                if options is None:
-                    LOG.error("Missing mask type input.")
-                    raise ValueError("Missing mask type input.")
-                else:
-                    measure_module = importlib.import_module(
-                        f"complex_epidemics.agents."
-                        f"support_objects.human."
-                        f"health_protection_measures"
-                    )
-                    measure_class = getattr(
-                        measure_module, f"{ProtectionMeasureType.MASKWEARING.value}"
-                    )
-                    measure_obj = measure_class(options)
-            case ProtectionMeasureType.SOCIALDISTANCING:
-                measure_module = importlib.import_module(
-                    f"complex_epidemics.agents."
-                    f"support_objects.human."
-                    f"health_protection_measures"
-                )
-                measure_class = getattr(
-                    measure_module, f"{ProtectionMeasureType.SOCIALDISTANCING.value}"
-                )
-                measure_obj = measure_class()
-            case _:
-                LOG.debug("Protection measure type option not implemented.")
-                raise InvalidOptionError(
-                    "Protection measure type option not implemented."
-                )
+                measure_obj = measure_class(options)
+        elif measure == ProtectionMeasureType.SOCIALDISTANCING:
+            measure_module = importlib.import_module(
+                f"complex_epidemics.agents."
+                f"support_objects.human."
+                f"health_protection_measures"
+            )
+            measure_class = getattr(
+                measure_module, f"{ProtectionMeasureType.SOCIALDISTANCING.value}"
+            )
+            measure_obj = measure_class()
+        else:
+            LOG.debug("Protection measure type option not implemented.")
+            raise InvalidOptionError(
+                "Protection measure type option not implemented."
+            )
 
         self._protection_measures[measure.name] = measure_obj
 
@@ -139,7 +138,6 @@ class HumanHealth(IModelStepper):
         self._immunity.append(ImmunityInstance(disease=disease))
 
     def step(self):
-        LOG.debug("HumanHealth step method called.")
         if len(self._diseases) != 0:
             for disease_instance in self._diseases:
                 if disease_instance.active:
@@ -152,18 +150,18 @@ class HumanHealth(IModelStepper):
 
 
 class HumanSocial(IModelStepper):
-    def __init__(self) -> None:
-        pass
+    def __init__(self, **kwargs) -> None:
+        self.__dict__.update(kwargs)
 
     def step(self):
         pass
 
 
 class HumanPhysical(IModelStepper):
-    def __init__(self) -> None:
-        self._age: int = 0
-        self._height: float = 0.0
-        self._weight: float = 0.0
+    def __init__(self, **kwargs) -> None:
+        self._age: int = kwargs.get('age', 0)
+        self._height: float = kwargs.get('height', 0.0)
+        self._weight: float = kwargs.get('weight', 0.0)
 
     @property
     def age(self) -> int:
@@ -194,8 +192,8 @@ class HumanPhysical(IModelStepper):
 
 
 class HumanPsychological(IModelStepper):
-    def __init__(self) -> None:
-        pass
+    def __init__(self, **kwargs) -> None:
+        self.__dict__.update(kwargs)
 
     def step(self):
         pass

@@ -60,17 +60,17 @@ class ProtectionMeasure:
     def change_application_quality(self, new_quality: ApplicationQuality):
         self.application = new_quality
 
+    @property
     def get_efficacy(self):
-        match self.application:
-            case ApplicationQuality.POOR:
-                return round(self.efficacy * self.application.value, 3)
-            case ApplicationQuality.GOOD:
-                return round(self.efficacy * self.application.value, 3)
-            case ApplicationQuality.EXCELLENT:
-                return round(self.efficacy * self.application.value, 3)
-            case _:
-                LOG.debug("Application quality option not implemented.")
-                raise InvalidOptionError("Application quality option not implemented.")
+        if self.application == ApplicationQuality.POOR:
+            return round(self.efficacy * self.application.value, 3)
+        elif self.application == ApplicationQuality.GOOD:
+            return round(self.efficacy * self.application.value, 3)
+        elif self.application == ApplicationQuality.EXCELLENT:
+            return round(self.efficacy * self.application.value, 3)
+        else:
+            LOG.debug("Application quality option not implemented.")
+            raise InvalidOptionError("Application quality option not implemented.")
 
 
 class HandWashing(ProtectionMeasure):

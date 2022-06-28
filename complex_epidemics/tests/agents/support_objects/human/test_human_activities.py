@@ -13,7 +13,7 @@ from complex_epidemics.agents.support_objects.human.human_occupation_categories 
 from complex_epidemics.agents.support_objects.human.low_level_human_behaviour import (
     Routine,
 )
-from complex_epidemics.agents.support_objects.infrastructure_builder import (
+from complex_epidemics.workbench.simulation.infrastructure_builder import (
     InfrastructureBuilder,
 )
 from complex_epidemics.agents.support_objects.locale.locale_categories import (

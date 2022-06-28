@@ -1,6 +1,6 @@
 import logging
-from datetime import time, timedelta
-from enum import Enum, auto
+from datetime import time
+from enum import IntEnum
 from typing import Any
 
 import numpy as np
@@ -24,10 +24,10 @@ from complex_epidemics.utils.exceptions import InvalidOptionError
 LOG = logging.getLogger(__name__)
 
 
-class Routine(Enum):
-    SIMPLE = auto()
-    STANDARD = auto()
-    SOPHISTICATED = auto()
+class Routine(IntEnum):
+    SIMPLE = 0
+    STANDARD = 1
+    SOPHISTICATED = 2
 
 
 class LowLevelBehaviour(IModelStepper):
@@ -69,23 +69,25 @@ class LowLevelBehaviour(IModelStepper):
         return self._day_planning
 
     def generate_simple_routine(self):
-        original_time = self._human.occupation.occupation_locale._activity_time.get(
+        is_healthy = self._human.health.health_state == HealthState.HEALTHY
+        original_time = self._human.occupation.locale._activity_time.get(
             "start_time"
         )
         delayed_time_hour = original_time.hour - 1
         delayed_time_minute = original_time.minute
-        self._common_activities[CommonActivity.OCCUPATION].start_time = time(
-            hour=delayed_time_hour, minute=delayed_time_minute
-        )
-        self._day_planning.append(self._common_activities[CommonActivity.OCCUPATION])
-        self._day_planning.append(self._common_activities[CommonActivity.RETURNHOME])
+        if is_healthy:
+            self._common_activities[CommonActivity.OCCUPATION].start_time = time(
+                hour=delayed_time_hour, minute=delayed_time_minute
+            )
+            self._day_planning.append(self._common_activities[CommonActivity.OCCUPATION])
+            self._day_planning.append(self._common_activities[CommonActivity.RETURNHOME])
 
     def generate_standard_routine(self):
         model_time = self._human.model.clock.get_datetime()
         is_weekday = model_time.weekday() in {0, 1, 2, 3, 4}
         is_healthy = self._human.health.health_state == HealthState.HEALTHY
         if is_weekday and is_healthy:
-            original_time = self._human.occupation.occupation_locale._activity_time.get(
+            original_time = self._human.occupation.locale._activity_time.get(
                 "start_time"
             )
             delayed_time_hour = original_time.hour - 1
@@ -116,7 +118,7 @@ class LowLevelBehaviour(IModelStepper):
         is_weekday = model_time.weekday() in {0, 1, 2, 3, 4}
         is_healthy = self._human.health.health_state == HealthState.HEALTHY
         if is_weekday and is_healthy:
-            original_time = self._human.occupation.occupation_locale._activity_time.get(
+            original_time = self._human.occupation.locale._activity_time.get(
                 "start_time"
             )
             delayed_time_hour = original_time.hour - 1
@@ -146,19 +148,18 @@ class LowLevelBehaviour(IModelStepper):
                 self._common_activities[CommonActivity.RETURNHOME]
             )
 
-    def generate_day_plan(self):
-        match self.routine:
-            case Routine.SIMPLE:
-                self.generate_simple_routine()
-            case Routine.STANDARD:
-                self.generate_standard_routine()
-            case Routine.SOPHISTICATED:
-                self.generate_sophisticated_routine()
-            case _:
-                LOG.error("Routine option is not implemented.")
-                raise InvalidOptionError("Routine option is not implemented.")
+    def generate_day_plan(self) -> None:
+        if self.routine == Routine.SIMPLE:
+            self.generate_simple_routine()
+        elif self.routine == Routine.STANDARD:
+            self.generate_standard_routine()
+        elif self.routine == Routine.SOPHISTICATED:
+            self.generate_sophisticated_routine()
+        else:
+            LOG.error("Routine option is not implemented.")
+            raise InvalidOptionError("Routine option is not implemented.")
 
-    def step(self):
+    def step(self) -> None:
         model_datetime = self._human.model.clock.get_datetime()
         # print(f"Model time: {model_datetime} ")
         if model_datetime.time() == time(3, 0, 0):
@@ -181,7 +182,8 @@ class LowLevelBehaviour(IModelStepper):
             self._running_activity.step()
 
         elif (
-            self._human.health.health_state == HealthState.DEBILITADED
+            (self._human.health.health_state == HealthState.DEBILITADED
+             or self._human.health.health_state == HealthState.INCAPACITATED)
             and self._running_activity
             != self._common_activities[CommonActivity.SPECIALIZEDHEALTHCARE]
         ):
@@ -189,7 +191,9 @@ class LowLevelBehaviour(IModelStepper):
             self._running_activity = self._common_activities[
                 CommonActivity.SPECIALIZEDHEALTHCARE
             ]
-            self._next_activity = None
+            self._next_activity = self._common_activities[
+                CommonActivity.RETURNHOME
+            ]
             self._running_activity.active = True
             self._running_activity.step()
 

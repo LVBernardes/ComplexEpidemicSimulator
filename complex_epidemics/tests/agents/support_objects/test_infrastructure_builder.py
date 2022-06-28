@@ -1,8 +1,5 @@
 from mesa.time import BaseScheduler
 
-from complex_epidemics.agents.locale import (
-    HealthCareUnit,
-)
 from complex_epidemics.agents.support_objects.locale.locale_categories import (
     EducationalInstitutionCategory,
     HealthCareCategory,
@@ -10,7 +7,7 @@ from complex_epidemics.agents.support_objects.locale.locale_categories import (
     PublicPlaceCategory,
     WorkplaceCategory,
 )
-from complex_epidemics.agents.support_objects.infrastructure_builder import (
+from complex_epidemics.workbench.simulation.infrastructure_builder import (
     InfrastructureBuilder,
 )
 from complex_epidemics.graph.networkx_engine.networkx_bipartitegraph import (

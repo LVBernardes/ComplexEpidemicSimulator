@@ -1,4 +1,3 @@
-import copy
 import logging
 from typing import Any
 
@@ -24,7 +23,7 @@ class Disease(Agent):
         "_infectivity",
         "_is_initial_infection_setup",
         "_initial_infected_population",
-        "_disease_instance_builder"
+        "_disease_instance_builder",
     )
 
     def __init__(self, unique_id: int, model: SimulationModel):
@@ -109,7 +108,7 @@ class Disease(Agent):
             for host_id in rng.choice(
                 susceptible_host_list, size=number_infected_hosts, replace=False
             ).tolist():
-                host = self.model.schedule._agents[host_id]
+                host = self.model.get_agent_by_id(host_id)
                 self.set_new_infection(host)
             self.is_initial_infection_setup = True
 
@@ -121,7 +120,7 @@ class Disease(Agent):
             for host_id in rng.choice(
                 susceptible_host_list, size=number_infected_hosts, replace=False
             ).tolist():
-                host = self.model.schedule._agents[host_id]
+                host = self.model.get_agent_by_id(host_id)
                 self.set_new_infection(host)
             self.is_initial_infection_setup = True
 
@@ -141,16 +140,16 @@ class Disease(Agent):
 
     def get_susceptible_hosts(self, container_agent: ContainerAgent):
         susceptible_host_list = list()
-        for host_id in container_agent.occupants:
-            host = self.model.schedule._agents[host_id]
+        for host_id in container_agent.all_individuals:
+            host = self.model.get_agent_by_id(host_id)
             if host.health.is_susceptible:
                 susceptible_host_list.append(host_id)
         return susceptible_host_list
 
     def get_infectious_hosts(self, container_agent: ContainerAgent):
         infectious_host_list = list()
-        for host_id in container_agent.occupants:
-            host = self.model.schedule._agents[host_id]
+        for host_id in container_agent.all_individuals:
+            host = self.model.get_agent_by_id(host_id)
             if host.health.is_infectious:
                 infectious_host_list.append(host_id)
         return infectious_host_list
@@ -167,7 +166,11 @@ class Disease(Agent):
         #         host_distance_efficacy = host.protection_measures.get(ProtectionMeasureType.MASKWEARING.name, None)
         #         host_infectivity = self.infectivity
 
-        infectivity = self.infectivity
+        if len(infectious_host_list) != 0:
+            infectivity = self.infectivity
+        else:
+            infectivity = 0.0
+
         container_agent.infectivity = infectivity
 
         return infectivity
@@ -175,9 +178,7 @@ class Disease(Agent):
     def set_new_infection(self, host: Any) -> None:
         if self._disease_instance_builder is None:
             LOG.error("Disease instance builder is not available or not defined.")
-            raise ValueError(
-                "Disease instance builder is not available or not defined"
-            )
+            raise ValueError("Disease instance builder is not available or not defined")
 
         self._disease_instance_builder.set_disease_instance_platform(
             disease=self, host=host
@@ -202,15 +203,15 @@ class Disease(Agent):
             )
 
             if hand_washing_measure is not None:
-                hand_washing_efficacy = hand_washing_measure.get_efficacy()
+                hand_washing_efficacy = hand_washing_measure.get_efficacy
             else:
                 hand_washing_efficacy = 0.0
             if mask_wearing_measure is not None:
-                mask_wearing_efficacy = mask_wearing_measure.get_efficacy()
+                mask_wearing_efficacy = mask_wearing_measure.get_efficacy
             else:
                 mask_wearing_efficacy = 0.0
             if social_distancing_measure is not None:
-                social_distancing_efficacy = social_distancing_measure.get_efficacy()
+                social_distancing_efficacy = social_distancing_measure.get_efficacy
             else:
                 social_distancing_efficacy = 0.0
         else:
@@ -232,7 +233,9 @@ class Disease(Agent):
 
         infection_probability = infectivity * (1 - attenuation_factor)
 
-        LOG.debug(f"Effective infection probability list: {infection_probability} .")
+        LOG.debug(f"Effective infection probability: {infection_probability} .")
+
+        # LOG.info(f"Effective infection probability: {infection_probability} .")
 
         infect_host = np.random.choice(
             [True, False], p=[infection_probability, 1 - infection_probability]
@@ -252,9 +255,12 @@ class Disease(Agent):
         container_infectivity = self.generate_infectivity_in_container_agent(
             container_agent=container_agent, infectious_host_list=infectious_hosts
         )
+        # LOG.info(f"Infectious occupants: {infectious_hosts}")
+        # LOG.info(f"Container infectivity: {container_infectivity}")
+        # LOG.info(f"Susceptible occupants: {susceptible_hosts}")
 
         for potential_host_id in susceptible_hosts:
-            potential_host = self.model.schedule._agents[potential_host_id]
+            potential_host = self.model.get_agent_by_id(potential_host_id)
             self.try_infecting_host(
                 infectivity=container_infectivity, host=potential_host
             )
@@ -262,7 +268,8 @@ class Disease(Agent):
     def spread(self):
 
         for container_agent_id in self.get_container_agents():
-            container_obj = self.model.schedule._agents[container_agent_id]
+            # LOG.info(f'Trying to infect container agent: {container_agent_id}')
+            container_obj = self.model.get_agent_by_id(container_agent_id)
             self.spread_through_container(container_agent=container_obj)
 
     def step(self):
